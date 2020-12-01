@@ -37,8 +37,8 @@ from TensorflowHelper import Callbacks, Encoder, Logging
 from tensorflow.keras.optimizers import Adam
 #endregion
 
-path ="S:\OneDrive - Hochschule Osnabrück\Semester 3\Fachseminar\Hausarbeit\Code\\"
-sys.path.insert(0, path)
+#path ="S:\OneDrive - Hochschule Osnabrück\Semester 3\Fachseminar\Hausarbeit\Code\\"
+#sys.path.insert(0, path)
 
 #region logging
 
