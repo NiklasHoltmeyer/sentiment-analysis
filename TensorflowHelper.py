@@ -1,0 +1,109 @@
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
+import tensorflow as tf
+import consts as CONSTS
+from os import path
+import sys
+import logging
+from pathlib import Path
+import numpy as np
+from datetime import datetime
+
+#Zumteil - src: Tensorflow Tutorial, https://www.kaggle.com/paoloripamonti/twitter-sentiment-analysis
+
+class Callbacks:
+    earlyStopping = EarlyStopping(
+        monitor='val_loss',  #loss
+        #monitor='accuracy',
+        min_delta=CONSTS.TRAINING.EARLY_STOPPING_MIN, # minimium amount of change to count as an improvement
+        patience=CONSTS.TRAINING.EARLY_STOPPING_PATIENCE, # anzahl epochen die gewartet werden sollen
+        restore_best_weights=True)
+
+    reduceLRonPlateau = ReduceLROnPlateau(monitor='val_loss', patience=CONSTS.TRAINING.EARLY_STOPPING_PATIENCE, cooldown=0)
+    
+    modelCheckpoint = lambda checkpoint_path : ModelCheckpoint(filepath=checkpoint_path + "/cp-{epoch:04d}.ckpt",
+                                                 save_weights_only=True,
+                                                 verbose=1,
+                                                 save_freq=CONSTS.TRAINING.BATCH_SIZE) #every poch # batch_size*5 = every 5th epoch)
+    
+    def createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
+        modelFolderName = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+        path = Path("model_checkpoints", modelFolderName)
+        path.mkdir(parents=True, exist_ok=True)
+        
+        return str(path.resolve())
+    
+class Logging:
+    def createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
+        keyValues = {   "GLOVE" : GLOVE, 
+                        "CNN" : CNN_LAYER, 
+                        "POOLING" : POOLING_LAYER, 
+                        "GRU" : GRU_LAYER, 
+                        "LSTM" : LSTM_Layer, 
+                        "DENSE" : DENSE_LAYER}
+        
+        modelName = "_".join([key for key, value in keyValues.items() if value])
+        modelName = modelName if len(modelName) > 0 else "no_name"
+        return modelName
+
+    def createLogPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
+        modelName = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+        pathFolder = Path("model_checkpoints", modelName)
+        pathFolder.mkdir(parents=True, exist_ok=True)
+        pathFile = Path(pathFolder, "{}.log".format(modelName))
+        return str(pathFile.resolve())
+
+    def getLogger(loggingFile = None, consoleLogging = True, logginLevel = logging.DEBUG, loggingPrefix = ""):
+        logFileHandler = logging.FileHandler(filename=loggingFile) if loggingFile is not None else None
+        consoleHandler = logging.StreamHandler(sys.stdout) if consoleLogging else None
+        
+        handlers = [logFileHandler, consoleHandler]
+        handlers = list(filter(None, handlers))
+        
+        logging.basicConfig(
+            level=logginLevel, 
+            format= loggingPrefix + '[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', #%(asctime)s - %(levelname)s: %(message)s
+            handlers=handlers
+        )
+        
+        logger = logging.getLogger("sentiment")
+        
+        logging.getLogger("matplotlib").setLevel(logging.WARNING)
+        logging.getLogger("nltk_data").setLevel(logging.WARNING)
+        return logger
+    
+    def getResultCSVRow(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
+        name = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)        
+        
+        acc = history.history['accuracy']
+        vallAcc = history.history['val_accuracy']
+        
+        epochs = len(history.history['val_accuracy'])
+        accMean, accMax = np.mean(acc), max(acc)
+        vallAccMean, vallAccMax = np.mean(vallAcc), max(vallAcc)
+        
+        layersCSV = ";".join([("x" if x else "") for x in [GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER]])
+        
+        time = str(datetime.now()).replace(" ", "_")
+        dataset = CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES
+        row = ";".join([str(x) for x in [time, dataset, epochs, name,  layersCSV, accMean, accMax, vallAccMean, vallAccMax ]])
+        return row + "\n"
+    
+    def loggingResult(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
+        row  = Logging.getResultCSVRow(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+        path, name = CONSTS.PATHS.TRAINING_RESULT_CSV
+        filePath = Path(path, name).resolve()
+        Path(path).mkdir(parents=True, exist_ok=True)
+                
+        with open(filePath, "a+") as f:
+            f.write(row)
+        
+        
+class Encoder:
+    def trainWordVectorEncoder(trainText, 
+                               VOCAB_SIZE=None):
+        #https://www.tensorflow.org/tutorials/text/text_classification_rnn
+        encoder = TextVectorization() if VOCAB_SIZE is None else  TextVectorization(max_tokens=VOCAB_SIZE)    
+        encoder.adapt(tf.data.Dataset.from_tensor_slices(trainText))
+    
+        return encoder
