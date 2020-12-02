@@ -26,19 +26,20 @@ class Callbacks:
                                                  verbose=1,
                                                  save_freq=CONSTS.TRAINING.BATCH_SIZE) #every poch # batch_size*5 = every 5th epoch)
     
-    def createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
-        modelFolderName = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+    def createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
+        modelFolderName = Logging.createModelName(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         path = Path(CONSTS.PATHS.MODEL_CHECKPOINTS, modelFolderName)
         path.mkdir(parents=True, exist_ok=True)
         
         return str(path.resolve())
     
 class Logging:
-    def createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
+    def createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):
         keyValues = {   "GLOVE" : GLOVE, 
                         "CNN" : CNN_LAYER, 
                         "POOLING" : POOLING_LAYER, 
                         "GRU" : GRU_LAYER, 
+                        "BiLSTM" : BiLSTM_Layer,
                         "LSTM" : LSTM_Layer, 
                         "DENSE" : DENSE_LAYER}
         
@@ -46,8 +47,8 @@ class Logging:
         modelName = modelName if len(modelName) > 0 else "no_name"
         return modelName
 
-    def createLogPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
-        modelName = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+    def createLogPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
+        modelName = Logging.createModelName(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         pathFolder = Path(CONSTS.PATHS.MODEL_CHECKPOINTS, modelName)
         pathFolder.mkdir(parents=True, exist_ok=True)
         pathFile = Path(pathFolder, "{}.log".format(modelName))
@@ -72,8 +73,8 @@ class Logging:
         logging.getLogger("nltk_data").setLevel(logging.WARNING)
         return logger
     
-    def getResultCSVRow(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
-        name = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)        
+    def getResultCSVRow(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
+        name = Logging.createModelName(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)        
         
         acc = history.history['accuracy']
         vallAcc = history.history['val_accuracy']
@@ -82,15 +83,15 @@ class Logging:
         accMean, accMax = np.mean(acc), max(acc)
         vallAccMean, vallAccMax = np.mean(vallAcc), max(vallAcc)
         
-        layersCSV = ";".join([("x" if x else "") for x in [GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER]])
+        layersCSV = ";".join([("x" if x else "") for x in [GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER]])
         
         time = str(datetime.now()).replace(" ", "_")
         dataset = CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES
         row = ";".join([str(x) for x in [time, dataset, epochs, name,  layersCSV, accMean, accMax, vallAccMean, vallAccMax ]])
         return row + "\n"
     
-    def loggingResult(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
-        row  = Logging.getResultCSVRow(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+    def loggingResult(history, GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):
+        row  = Logging.getResultCSVRow(history=history, GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         path, name = CONSTS.PATHS.TRAINING_RESULT_CSV
         filePath = Path(path, name).resolve()
         Path(path).mkdir(parents=True, exist_ok=True)

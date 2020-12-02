@@ -89,6 +89,10 @@ def addLSTMLayer(model):
     model.add(LSTM(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1))
     return model
 
+def addBiLSTMLayer(model):
+    model.add(Bidirectional(LSTM(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1)))
+    return model
+
 def addDenseLayer(model):
     model.add(Dense(128, activation='relu'))
     return model
@@ -135,7 +139,7 @@ def baseModelNonGlove(logger):
     model = embeddingLayerNoGloveModel(encoder) 
     return model, train_data, test_data
 
-def testModel(GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, DENSE_LAYER = False, logger = None):
+def testModel(GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
     model, train_data, test_data = baseModelGlove(logger) if GLOVE else baseModelNonGlove(logger)
     trainX, trainY = train_data
     logger.debug(("[Model] with Glove" if GLOVE else "[Model] Selftrained Word2Vec"))
@@ -152,10 +156,14 @@ def testModel(GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER
         logger.debug("[Model] Add GRU_LAYER")
         model = addGRULayer(model)
     
+    if BiLSTM_Layer:        
+        logger.debug("[Model] Add BiLSTM_Layer")
+        model = addBiLSTMLayer(model)
+
     if LSTM_Layer:
         logger.debug("[Model] Add LSTM_Layer")
         model = addLSTMLayer(model)
-        
+    
     if DENSE_LAYER:
         logger.debug("[Model] Add DENSE_LAYER")
         model = addDenseLayer(model)
@@ -164,10 +172,9 @@ def testModel(GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER
     model.add(Dense(1, activation='sigmoid')) #output layer
     
     model.compile(optimizer=Adam(learning_rate=CONSTS.TRAINING.Learning_Rate), loss='binary_crossentropy',
-                metrics=['accuracy'])
-    
-    
-    checkPointPath = Callbacks.createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
+                metrics=['accuracy'])    
+
+    checkPointPath = Callbacks.createCheckpointPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
     
     history = model.fit(trainX, trainY, epochs=CONSTS.TRAINING.EPOCHS, 
                         batch_size=CONSTS.TRAINING.BATCH_SIZE,
@@ -184,10 +191,11 @@ parser.add_argument('--glove', type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Should the Model use Glove or should it train its own WordVec")
 
-parser.add_argument('--layer_CNN',           type=str2bool, nargs='?', const=True, default=False, help="Add a CNN Layer")
-parser.add_argument('--layer_POOLING',   type=str2bool, nargs='?', const=True, default=False, help="Add a POOLING Layer")
-parser.add_argument('--layer_GRU',           type=str2bool, nargs='?', const=True, default=False, help="Add a GRU Layer")
-parser.add_argument('--layer_LSTM',         type=str2bool, nargs='?', const=True, default=False, help="Add a LSTM Layer")
+parser.add_argument('--layer_CNN',         type=str2bool, nargs='?', const=True, default=False, help="Add a CNN Layer")
+parser.add_argument('--layer_POOLING',     type=str2bool, nargs='?', const=True, default=False, help="Add a POOLING Layer")
+parser.add_argument('--layer_GRU',         type=str2bool, nargs='?', const=True, default=False, help="Add a GRU Layer")
+parser.add_argument('--layer_BiLSTM',      type=str2bool, nargs='?', const=True, default=False, help="Add a BiLSTM Layer")
+parser.add_argument('--layer_LSTM',        type=str2bool, nargs='?', const=True, default=False, help="Add a LSTM Layer")
 parser.add_argument('--layer_DENSE',       type=str2bool, nargs='?', const=True, default=False, help="Add a DENSE Layer")
 
 args = parser.parse_args()
@@ -196,6 +204,7 @@ loggingFile = Logging.createLogPath(GLOVE = args.glove,
             CNN_LAYER = args.layer_CNN, 
             POOLING_LAYER = args.layer_POOLING, 
             GRU_LAYER = args.layer_GRU, 
+            BiLSTM_Layer = args.layer_BiLSTM, 
             LSTM_Layer = args.layer_LSTM, 
             DENSE_LAYER = args.layer_DENSE)
 
@@ -205,6 +214,7 @@ model, history = testModel(GLOVE = args.glove,
             CNN_LAYER = args.layer_CNN, 
             POOLING_LAYER = args.layer_POOLING, 
             GRU_LAYER = args.layer_GRU, 
+            BiLSTM_Layer = args.layer_BiLSTM, 
             LSTM_Layer = args.layer_LSTM, 
             DENSE_LAYER = args.layer_DENSE,
             logger = logger)
@@ -214,6 +224,7 @@ Logging.loggingResult(history, GLOVE = args.glove,
             POOLING_LAYER = args.layer_POOLING, 
             GRU_LAYER = args.layer_GRU, 
             LSTM_Layer = args.layer_LSTM, 
+            BiLSTM_Layer = args.layer_BiLSTM, 
             DENSE_LAYER = args.layer_DENSE)
 #Bsp:
 #python train.py --glove 1 
