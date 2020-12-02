@@ -28,7 +28,7 @@ class Callbacks:
     
     def createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
         modelFolderName = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
-        path = Path("model_checkpoints", modelFolderName)
+        path = Path(CONSTS.PATHS.MODEL_CHECKPOINTS, modelFolderName)
         path.mkdir(parents=True, exist_ok=True)
         
         return str(path.resolve())
@@ -48,7 +48,7 @@ class Logging:
 
     def createLogPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER):
         modelName = Logging.createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, DENSE_LAYER)
-        pathFolder = Path("model_checkpoints", modelName)
+        pathFolder = Path(CONSTS.PATHS.MODEL_CHECKPOINTS, modelName)
         pathFolder.mkdir(parents=True, exist_ok=True)
         pathFile = Path(pathFolder, "{}.log".format(modelName))
         return str(pathFile.resolve())
