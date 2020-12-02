@@ -6,8 +6,11 @@ class GLOBAL:
 
 class PATHS: 
     BASE = os.getcwd()
+    RESULTS_BASE = os.getcwd() + "/results/"
+    MODEL_CHECKPOINTS = RESULTS_BASE + "/model_checkpoints/"
     SENTIMENT140_DATASET = "../data/sentiment140/training.1600000.processed.noemoticon.csv" ##BASE +"\\Datasets\Sentiment140_twitter\\training.1600000.processed.noemoticon.csv"
-    TRAINING_RESULT_CSV = (os.getcwd(), "result.csv") #path, filename
+    TRAINING_RESULT_CSV = (RESULTS_BASE, "result.csv") #path, filename
+    
     
 class GLOVE:
     GLOVE_FILENAME = "../data/glove/glove.twitter.27B.100d.txt"
