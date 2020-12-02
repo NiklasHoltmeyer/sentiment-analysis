@@ -12,4 +12,4 @@ mkdir -p "$SCRIPTPATH/../data/glove"
 wget -nc http://nlp.stanford.edu/data/glove.twitter.27B.zip -P "$SCRIPTPATH/../data/glove"
 unzip -n -d "$SCRIPTPATH/../data/glove" "$SCRIPTPATH/../data/glove/glove.twitter.27B.zip"
 
-python -m pip install -r requirements.txt
+python -m pip install -r "$SCRIPTPATH/requirements.txt"
