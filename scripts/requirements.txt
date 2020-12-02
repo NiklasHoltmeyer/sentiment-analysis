@@ -1,0 +1,6 @@
+tensorflow 
+pandas 
+matplotlib 
+nltk 
+chakin 
+contractions
