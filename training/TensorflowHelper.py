@@ -24,7 +24,8 @@ class Callbacks:
     modelCheckpoint = lambda checkpoint_path : ModelCheckpoint(filepath=checkpoint_path + "/cp-{epoch:04d}.ckpt",
                                                  save_weights_only=True,
                                                  verbose=1,
-                                                 save_freq=CONSTS.TRAINING.BATCH_SIZE) #every poch # batch_size*5 = every 5th epoch)
+                                                 save_freq=CONSTS.TRAINING.BATCH_SIZE * 5) #every poch # batch_size*5 = every 5th epoch)
+
     csvLogger = lambda filePath : CSVLogger(filePath, separator=';', append=True)
     
     def createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
