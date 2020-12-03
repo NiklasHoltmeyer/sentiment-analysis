@@ -1,4 +1,4 @@
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint, CSVLogger
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import tensorflow as tf
 import consts as CONSTS
@@ -25,6 +25,7 @@ class Callbacks:
                                                  save_weights_only=True,
                                                  verbose=1,
                                                  save_freq=CONSTS.TRAINING.BATCH_SIZE) #every poch # batch_size*5 = every 5th epoch)
+    csvLogger = lambda filePath : CSVLogger(filePath, separator=';', append=True)
     
     def createCheckpointPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
         modelFolderName = Logging.createModelName(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)
@@ -47,11 +48,11 @@ class Logging:
         modelName = modelName if len(modelName) > 0 else "no_name"
         return modelName
 
-    def createLogPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
+    def createLogPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER, PREFIX = "", SUFFIX=".log"):        
         modelName = Logging.createModelName(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         pathFolder = Path(CONSTS.PATHS.MODEL_CHECKPOINTS, modelName)
         pathFolder.mkdir(parents=True, exist_ok=True)
-        pathFile = Path(pathFolder, "{}.log".format(modelName))
+        pathFile = Path(pathFolder, "{}{}{}".format(PREFIX, modelName, SUFFIX))
         return str(pathFile.resolve())
 
     def getLogger(loggingFile = None, consoleLogging = True, logginLevel = logging.DEBUG, loggingPrefix = ""):

@@ -175,11 +175,14 @@ def testModel(GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER
                 metrics=['accuracy'])    
 
     checkPointPath = Callbacks.createCheckpointPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+    csvLoggerPath = Logging.createLogPath(PREFIX = "keras_", SUFFIX=".csv", GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        
+    callsBacks = [Callbacks.earlyStopping, Callbacks.reduceLRonPlateau, Callbacks.modelCheckpoint(checkPointPath), Callbacks.csvLogger(csvLoggerPath)]
     
     history = model.fit(trainX, trainY, epochs=CONSTS.TRAINING.EPOCHS, 
                         batch_size=CONSTS.TRAINING.BATCH_SIZE,
                         validation_data=test_data, 
-                        callbacks=[Callbacks.earlyStopping, Callbacks.reduceLRonPlateau, Callbacks.modelCheckpoint(checkPointPath)],
+                        callbacks=callsBacks,
                         verbose=2)
     
     model.summary()
