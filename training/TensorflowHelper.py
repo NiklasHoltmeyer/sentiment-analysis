@@ -9,9 +9,8 @@ from pathlib import Path
 import numpy as np
 from datetime import datetime
 
-#Zumteil - src: Tensorflow Tutorial, https://www.kaggle.com/paoloripamonti/twitter-sentiment-analysis
-
 class Callbacks:
+    #Zumteil - src: Tensorflow Tutorial, https://www.kaggle.com/paoloripamonti/twitter-sentiment-analysis
     earlyStopping = EarlyStopping(
         monitor='val_loss',  #loss
         #monitor='accuracy',
