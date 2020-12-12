@@ -14,16 +14,16 @@ class PATHS:
     
     
 class GLOVE:
-    GLOVE_FILENAME = "../data/glove/glove.twitter.27B.100d.txt"
-    GLOVE_DIM = 100
+    GLOVE_FILENAME = "../data/glove/glove.twitter.27B.25d.txt"
+    GLOVE_DIM = 25
     
 class TRAINING:
     TRAIN_SIZE = 0.8
-    EPOCHS = 50
+    EPOCHS = 2
     Learning_Rate = 1e-3
     EARLY_STOPPING_MIN = 1e-3
     EARLY_STOPPING_PATIENCE = 5
-    NUMBER_OF_TRAINING_DATA_ENTRIES = None# <- None = read every entry -> faster testing with less data
+    NUMBER_OF_TRAINING_DATA_ENTRIES = 10# <- None = read every entry -> faster testing with less data
     BATCH_SIZE = 1024
     
 class PREPROCESSING:
