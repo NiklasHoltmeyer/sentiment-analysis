@@ -1,0 +1,14 @@
+python train.py train --glove 1 --layer_LSTM 1
+python train.py train --glove 1 --layer_BiLSTM 1
+python train.py train --glove 1 --layer_BiLSTM 1 --layer_DENSE 1
+python train.py train --glove 1 --layer_CNN 1 --layer_POOLING 1 --layer_GRU 1 --layer_LSTM 1 --layer_DENSE 1
+python train.py train --glove 1 --layer_GRU 1
+python train.py train --glove 1 --layer_CNN 1 --layer_POOLING 1 --layer_BiLSTM 1 --layer_DENSE 1
+python train.py train --glove 1 --layer_CNN 1 --layer_POOLING 1 --layer_BiLSTM 1
+python train.py train --layer_CNN 1 --layer_POOLING 1 --layer_BiLSTM 1 --layer_DENSE 1
+python train.py train --layer_CNN 1 --layer_POOLING 1 --layer_BiLSTM 1
+python train.py train --layer_CNN 1 --layer_POOLING 1 --layer_GRU 1 --layer_DENSE 1
+python train.py train --layer_CNN 1 --layer_POOLING 1 --layer_LSTM 1 --layer_DENSE 1
+python train.py train --layer_CNN 1 --layer_POOLING 1 --layer_GRU 1 --layer_LSTM 1 --layer_DENSE 1
+python train.py train --glove 1 --layer_CNN 1 --layer_POOLING 1 --layer_GRU 1 --layer_DENSE 1
+python train.py train --glove 1 --layer_CNN 1 --layer_POOLING 1 --layer_LSTM 1 --layer_DENSE 1

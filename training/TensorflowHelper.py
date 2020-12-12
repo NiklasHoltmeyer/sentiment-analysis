@@ -34,6 +34,13 @@ class Callbacks:
         
         return str(path.resolve())
     
+    def createModelPath(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):        
+        modelFolderName = Logging.createModelName(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, BiLSTM_Layer = BiLSTM_Layer, LSTM_Layer = LSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        path = Path(CONSTS.PATHS.MODEL, modelFolderName)
+        path.mkdir(parents=True, exist_ok=True)
+        filePath = Path(path, "{}.tf".format(modelFolderName))
+        return str(filePath.resolve())
+    
 class Logging:
     def createModelName(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, BiLSTM_Layer, LSTM_Layer, DENSE_LAYER):
         keyValues = {   "GLOVE" : GLOVE, 

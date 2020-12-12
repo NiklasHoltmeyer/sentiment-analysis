@@ -16,7 +16,7 @@ from  nltk.stem import SnowballStemmer
 from nltk.tokenize import TweetTokenizer
 
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-
+from keras.models import load_model
 import tensorflow as tf
 from tensorflow.keras.layers import Conv1D, Bidirectional, LSTM, Dense, Input, Dropout, Embedding, AveragePooling1D, MaxPooling1D, Flatten, GRU, MaxPool1D, SpatialDropout1D
 from tensorflow.keras import Sequential
@@ -120,7 +120,7 @@ class TensorflowModels:
         model = self.embeddingLayerNoGloveModel(encoder) 
         return model, train_data, test_data
 
-    def testModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
+    def createModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
         model, train_data, test_data = self.baseModelGlove(logger) if GLOVE else self.baseModelNonGlove(logger)
         trainX, trainY = train_data
         logger.debug(("[Model] with Glove" if GLOVE else "[Model] Selftrained Word2Vec"))
@@ -152,20 +152,33 @@ class TensorflowModels:
         logger.debug("Dataset: Training = {}, Validation = {} Item(s)".format(len(train_data[0]), len(test_data[0])))
         model.add(Dense(1, activation='sigmoid')) #output layer
         
-        model.compile(optimizer=Adam(learning_rate=CONSTS.TRAINING.Learning_Rate), loss='binary_crossentropy',
-                    metrics=['accuracy'])    
-
+        model.compile(optimizer=Adam(learning_rate=CONSTS.TRAINING.Learning_Rate), loss='binary_crossentropy', metrics=['accuracy'])    
+        
+        return model, trainX, trainY, test_data
+    
+    def loadModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
+        model, _, _, _ = self.createModel(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, BiLSTM_Layer, DENSE_LAYER, logger)
+        modelPath = Callbacks.createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        model.tf.keras.models.load_model(modelPath) #load_weights load_model
+        return model
+    
+    def trainModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
+        model, trainX, trainY, test_data = self.createModel(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, BiLSTM_Layer, DENSE_LAYER, logger)
+            
         checkPointPath = Callbacks.createCheckpointPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         csvLoggerPath = Logging.createLogPath(PREFIX = "keras_", SUFFIX=".csv", GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
-            
-        callsBacks = [Callbacks.earlyStopping, Callbacks.reduceLRonPlateau, Callbacks.modelCheckpoint(checkPointPath), Callbacks.csvLogger(csvLoggerPath)]
+        modelPath = Callbacks.createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         
+        callsBacks = [Callbacks.earlyStopping, Callbacks.reduceLRonPlateau, Callbacks.modelCheckpoint(checkPointPath), Callbacks.csvLogger(csvLoggerPath)]
+            
         history = model.fit(trainX, trainY, epochs=CONSTS.TRAINING.EPOCHS, 
                             batch_size=CONSTS.TRAINING.BATCH_SIZE,
                             validation_data=test_data, 
                             callbacks=callsBacks,
                             verbose=2)
-        
+                            
         model.summary()
-        
+        model.save(modelPath)          
+            
         return model, history
+            

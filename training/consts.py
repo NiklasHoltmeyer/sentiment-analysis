@@ -8,6 +8,7 @@ class PATHS:
     BASE = os.getcwd()
     RESULTS_BASE = os.getcwd() + "/results/"
     MODEL_CHECKPOINTS = RESULTS_BASE + "/model_checkpoints/"
+    MODEL = RESULTS_BASE + "/model/"
     SENTIMENT140_DATASET = "../data/sentiment140/training.1600000.processed.noemoticon.csv" ##BASE +"\\Datasets\Sentiment140_twitter\\training.1600000.processed.noemoticon.csv"
     TRAINING_RESULT_CSV = (RESULTS_BASE, "result.csv") #path, filename
     
@@ -18,7 +19,7 @@ class GLOVE:
     
 class TRAINING:
     TRAIN_SIZE = 0.8
-    EPOCHS = 50
+    EPOCHS = 2
     Learning_Rate = 1e-3
     EARLY_STOPPING_MIN = 1e-3
     EARLY_STOPPING_PATIENCE = 5
