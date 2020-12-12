@@ -159,7 +159,7 @@ class TensorflowModels:
     def loadModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
         model, _, _, _ = self.createModel(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, BiLSTM_Layer, DENSE_LAYER, logger)
         modelPath = Callbacks.createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
-        model.tf.keras.models.load_model(modelPath) #load_weights load_model
+        tf.keras.models.load_model(modelPath) #load_weights load_model
         return model
     
     def trainModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
