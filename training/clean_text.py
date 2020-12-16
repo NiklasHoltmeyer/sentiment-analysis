@@ -49,9 +49,9 @@ class CleanText:
         for pattern, replace in CleanText.cleanPattern:
             text = re.sub(pattern, replace, text)
         
+        text = contractions.fix(text).lower() ##bspw. you've -> you have
         text = self.removestopWordsAndNonAlphabetic(text)               
         text = self.lemmantizing(text)
-        text = contractions.fix(text).lower() ##bspw. you've -> you have
         #output_data = tf.strings.regex_replace(output_data,"(\s){2,}", "")   #multiple whitespaces
         
         return text
