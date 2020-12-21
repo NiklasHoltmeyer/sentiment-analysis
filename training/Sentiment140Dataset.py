@@ -19,7 +19,7 @@ class Sentiment140Dataset:
         
     decodeSentiment = lambda x: "Positive" if x == 4 else "Negative" if x == 0 else "ERROR"
         
-    def load(self, cleanFN, TRAIN_SIZE=0.8, padInput=True, DEBUG=False):
+    def load(self, cleanFN, TRAIN_SIZE=0.8, padInput=True, DEBUG=False, Tokanize=True, BERT=False):
         # Read Data
         self.logger.debug('[Sentiment140] Reading Sentiment Dataset')
         startTime = time.time()
@@ -45,7 +45,8 @@ class Sentiment140Dataset:
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done]')   
         train_data, test_data = train_test_split(dataset, test_size=1-TRAIN_SIZE, random_state=7)
         self.logger.debug('[Sentiment140] Tokanize Text')   
-        tokenizer = self.loadTokenizer(train_data.text)
+        if Tokanize:
+            self.tokenizer = self.loadTokenizer(train_data.text)
                 
         #Padding Input
         x_train, x_test = train_data.text, test_data.text
@@ -61,8 +62,9 @@ class Sentiment140Dataset:
         labelEncoder, y_train, y_test = self.transformLabel(targets = train_data.sentiment, trainingCorpus = train_data.sentiment, validationCorpus = test_data.sentiment)
         
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
-        
-        return ((x_train, y_train), (x_test, y_test), labelEncoder)
+                
+        return ((x_train, y_train), (x_test, y_test), labelEncoder) if not BERT  else \
+                    train_data, test_data, labelEncoder
     
     def transformLabel(self, targets, trainingCorpus, validationCorpus):
         labelEncoder = LabelEncoder()

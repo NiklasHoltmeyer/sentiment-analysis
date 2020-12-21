@@ -36,7 +36,7 @@ from TensorflowHelper import Callbacks, Encoder, Logging
 from tensorflow.keras.optimizers import Adam
 
 class TensorflowModels:
-    def loadDataset(self, LOAD_GLOVE, padInput, logger):    
+    def loadDataset(self, LOAD_GLOVE, padInput, logger, cleanFN = CleanText().cleanText, Tokanize=True, BERT = False):    
         s140 = Sentiment140Dataset(path=CONSTS.PATHS.SENTIMENT140_DATASET, 
                                 embeddingDim=CONSTS.GLOVE.GLOVE_DIM, 
                                 MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH, 
@@ -44,8 +44,10 @@ class TensorflowModels:
 
         train_data, test_data, labelDecoder = s140.load(TRAIN_SIZE=CONSTS.TRAINING.TRAIN_SIZE, 
                                                         DEBUG=CONSTS.GLOBAL.DEBUG, 
-                                                        cleanFN = CleanText().cleanText,
-                                                        padInput=padInput)
+                                                        cleanFN = cleanFN,
+                                                        padInput=padInput,
+                                                        Tokanize = Tokanize,
+                                                        BERT = BERT)
 
         gloveEmbeddingMatrix = GloveDataset(CONSTS.GLOVE.GLOVE_FILENAME, CONSTS.GLOVE.GLOVE_DIM, logger = logger) \
                                 .embeddingMatrix(s140.getTokenizer()) if LOAD_GLOVE else None

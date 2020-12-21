@@ -55,7 +55,7 @@ class CleanText:
         #output_data = tf.strings.regex_replace(output_data,"(\s){2,}", "")   #multiple whitespaces
         
         return text
-      
+    
     def regpexpCleanPatterns():
         #Based on: https://www.kaggle.com/tanulsingh077/twitter-sentiment-extaction-analysis-eda-and-model 
         # https://www.kaggle.com/avramandrei96/short-and-simple-lstm-with-glove-embeddings
