@@ -24,7 +24,7 @@ class Sentiment140Dataset:
         self.logger.debug('[Sentiment140] Reading Sentiment Dataset')
         startTime = time.time()
         
-        dataset = pd.read_csv(self.path, encoding ="ISO-8859-1" , names=["sentiment", "ids", "date", "flag", "user", "text"])
+        dataset = pd.read_csv(self.path, encoding ="ISO-8859-1" , names=["sentiment", "ids", "date", "flag", "user", "text"]) \
                     .drop(["ids", "date", "flag", "user"], axis=1) 
                     
         dataset = dataset.sample(n=CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES, random_state=42) 
@@ -36,15 +36,18 @@ class Sentiment140Dataset:
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Sentiment)')
         dataset['sentiment'] = dataset['sentiment'].apply(Sentiment140Dataset.decodeSentiment)
         
-        self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
-        dataset['text'] = dataset['text'].apply(cleanFN)  
-
         if DEBUG:
             dataset['sentiment'].hist()
 
         #Tokenizer
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done]')   
         train_data, test_data = train_test_split(dataset, test_size=1-TRAIN_SIZE, random_state=7)
+        
+        self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
+        #dataset['text'] = dataset['text'].apply(cleanFN)  
+        train_data['text'] = train_data['text'].apply(cleanFN)  
+        test_data['text'] = test_data['text'].apply(cleanFN)  
+        
         self.logger.debug('[Sentiment140] Tokanize Text')   
         if Tokanize:
             self.tokenizer = self.loadTokenizer(train_data.text)
