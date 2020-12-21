@@ -27,7 +27,8 @@ class Sentiment140Dataset:
         dataset = pd.read_csv(self.path, encoding ="ISO-8859-1" , names=["sentiment", "ids", "date", "flag", "user", "text"]) \
                     .drop(["ids", "date", "flag", "user"], axis=1) 
                     
-        dataset = dataset.sample(n=CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES, random_state=42) 
+        dataset = dataset.sample(n=CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES, random_state=42) if CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES is None else \
+                dataset.sample(n=len(dataset), random_state=42)
         
         self.logger.debug('[Sentiment140] Reading Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset')
