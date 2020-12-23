@@ -10,7 +10,7 @@ import logging
 import time
 
 class Sentiment140Dataset:        
-    def __init__(self, path, embeddingDim, logger, MAX_SEQUENCE_LENGTH=30):
+    def __init__(self, path, embeddingDim, logger, MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH):
         self.path = path
         self.tokenizer = None
         self.embeddingDim = embeddingDim
@@ -62,15 +62,17 @@ class Sentiment140Dataset:
             x_train, x_test = self.padInput(train_data.text), self.padInput(test_data.text)
         else:
             self.logger.debug('[Sentiment140] Pad Input (disabled)') 
-
+            
+        if BERT:
+            return train_data, test_data, labelEncoder
+        
         #Transform Output
         self.logger.debug('[Sentiment140] LabelEncode')
         labelEncoder, y_train, y_test = self.transformLabel(targets = train_data.sentiment, trainingCorpus = train_data.sentiment, validationCorpus = test_data.sentiment)
         
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
                 
-        return ((x_train, y_train), (x_test, y_test), labelEncoder) if not BERT  else \
-                    train_data, test_data, labelEncoder
+        return ((x_train, y_train), (x_test, y_test), labelEncoder) 
     
     def transformLabel(self, targets, trainingCorpus, validationCorpus):
         labelEncoder = LabelEncoder()
@@ -92,11 +94,11 @@ class Sentiment140Dataset:
     def getTokenizer(self):
         return self.tokenizer
     
-    def padInput(self, corpus):
+    def padInput(self, text): #should be inside glove
         if self.tokenizer is None:
             print("ERROR: first setTokenizer!")
             return None
-        return pad_sequences(self.tokenizer.texts_to_sequences(corpus),
+        return pad_sequences(self.tokenizer.texts_to_sequences(text),
                         maxlen = self.MAX_SEQUENCE_LENGTH)  
 
     ##def getEmbeddingLayer(self, embeddingMatrix, embeddingDim):          
