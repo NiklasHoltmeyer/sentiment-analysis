@@ -39,12 +39,15 @@ logging.getLogger("matplotlib").setLevel(logging.WARNING)
 logging.getLogger("nltk_data").setLevel(logging.WARNING)
 
 
-model, history = TensorflowModels().trainModel(GLOVE = True, 
-            CNN_LAYER = True, 
+model, history = TensorflowModels().trainModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
             POOLING_LAYER = True, 
             BiLSTM_Layer = True, 
             logger = logger)
-
+            
+sample_text = ('The movie was not good. The animation and the graphics '
+                    'were terrible. I would not recommend this movie.')
+sample_text_cleaned = CleanText().cleanText(sample_text)
+model.predict([sample_text])
 #model, history = TensorflowModels().trainModel(GLOVE = True, 
 #            CNN_LAYER = True 
 #            POOLING_LAYER = True 
