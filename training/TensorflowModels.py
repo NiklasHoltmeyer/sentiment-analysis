@@ -55,6 +55,7 @@ class TensorflowModels:
         return (train_data, test_data, labelDecoder, s140, gloveEmbeddingMatrix) if LOAD_GLOVE else \
             (train_data, test_data, labelDecoder, s140)
 
+    
     def addCNNLayer(self, model):    
         model.add(SpatialDropout1D(0.2))
         model.add(Conv1D(filters=64, kernel_size=5, padding = 'same', activation='relu'))    
@@ -66,20 +67,23 @@ class TensorflowModels:
 
     def addGRULayer(self, model):
         model.add(GRU(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))
+        model.add(GRU(256))
         return model
 
     def addLSTMLayer(self, model):
         model.add(LSTM(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1))
+        model.add(LSTM(256))
         return model
 
     def addBiLSTMLayer(self, model):
         model.add(Bidirectional(LSTM(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1)))
+        model.add(Bidirectional(LSTM(256)))
         return model
 
     def addDenseLayer(self, model):
         model.add(Dense(128, activation='relu'))
-        return model
-
+        return model    
+    
     def embeddingLayerGloveModel(self, MAX_SEQUENCE_LENGTH, vocab_size, embeddingDim, embeddingMatrix):
         model = tf.keras.Sequential()
             
@@ -122,6 +126,7 @@ class TensorflowModels:
         model = self.embeddingLayerNoGloveModel(encoder) 
         return model, train_data, test_data
 
+    
     def createModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
         model, train_data, test_data = self.baseModelGlove(logger) if GLOVE else self.baseModelNonGlove(logger)
         trainX, trainY = train_data
@@ -152,7 +157,8 @@ class TensorflowModels:
             model = self.addDenseLayer(model)
         
         logger.debug("Dataset: Training = {}, Validation = {} Item(s)".format(len(train_data[0]), len(test_data[0])))
-        model.add(Dense(1, activation='sigmoid')) #output layer
+        model.add(Dropout(0.5))
+        model.add(Dense(1, activation='sigmoid')) #output layer      
         
         model.compile(optimizer=Adam(learning_rate=CONSTS.TRAINING.Learning_Rate), loss='binary_crossentropy', metrics=['accuracy'])    
         
@@ -179,7 +185,7 @@ class TensorflowModels:
                             verbose=2)
                             
         model.summary()
-        model.save(modelPath)          
+        #model.save(modelPath)          
             
         return model, history
             
