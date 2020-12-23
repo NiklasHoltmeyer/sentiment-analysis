@@ -44,10 +44,6 @@ model, history = TensorflowModels().trainModel(CNN_LAYER = True,  #self-trained 
             BiLSTM_Layer = True, 
             logger = logger)
             
-sample_text = ('The movie was not good. The animation and the graphics '
-                    'were terrible. I would not recommend this movie.')
-sample_text_cleaned = CleanText().cleanText(sample_text)
-model.predict([sample_text])
 #model, history = TensorflowModels().trainModel(GLOVE = True, 
 #            CNN_LAYER = True 
 #            POOLING_LAYER = True 
@@ -58,3 +54,35 @@ model.predict([sample_text])
 #            logger = logger)
 
 ```
+### Prediction
+#### self-trained embedding layer (Word2Vec)
+```python
+sample_text = ('The movie was not good. The animation and the graphics '
+                    'were terrible. I would not recommend this movie.')
+sample_text_cleaned = CleanText().cleanText(sample_text)
+model.predict([sample_text])
+```
+
+#### GloVe embedding layer (subject to change)
+```python
+from Sentiment140Dataset import Sentiment140Dataset
+
+s140 = Sentiment140Dataset(path=CONSTS.PATHS.SENTIMENT140_DATASET, 
+                                embeddingDim=CONSTS.GLOVE.GLOVE_DIM, 
+                                MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH, 
+                                logger = logger)
+train_data, test_data, labelDecoder = s140.load(padInput=True, 
+                                                TRAIN_SIZE=CONSTS.TRAINING.TRAIN_SIZE, 
+                                                        DEBUG=CONSTS.GLOBAL.DEBUG, 
+                                                        cleanFN = CleanText().cleanText,
+                                                        Tokanize = True,
+                                                        BERT = False)
+
+sample_text = ('The movie was not good. The animation and the graphics '
+                    'were terrible. I would not recommend this movie.')
+sample_text_cleaned = CleanText().cleanText(sample_text)
+sample_text_glove = s140.padInput(sample_text_cleaned)
+model.predict([sample_text_glove])
+```
+
+
