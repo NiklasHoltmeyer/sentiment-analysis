@@ -1,4 +1,5 @@
-# Deep Learning for Sentiment Analysis
+# Deep Learning for Sentiment Analysis [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](ttps://colab.research.google.com/github/NiklasHoltmeyer/sentiment-analysis/blob/main/example/Deep%20Learning%20for%20Sentiment%20Analysis%20-%20example.ipynb)
+
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/NiklasHoltmeyer/sentiment-analysis) [![Made withJupyter](https://img.shields.io/badge/Made%20with-Jupyter-orange?style=for-the-badge&logo=Jupyter)](https://jupyter.org/try)
  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
  [![Github](https://img.shields.io/badge/Git-Hub-green.svg)](https://github.com/NiklasHoltmeyer/sentiment-analysis)
