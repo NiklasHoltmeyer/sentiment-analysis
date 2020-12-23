@@ -10,7 +10,7 @@ The following script contains the (Python) requirements and training data.
 
 
 ```bash
-bash /content/scripts/0_install_prerequisites.sh
+bash ./scripts/0_install_prerequisites.sh
 ```
 
 ## Usage
