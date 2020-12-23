@@ -57,6 +57,7 @@ model, history = TensorflowModels().trainModel(CNN_LAYER = True,  #self-trained 
 ### Prediction
 #### self-trained embedding layer (Word2Vec)
 ```python
+from clean_text import CleanText
 sample_text = ('The movie was not good. The animation and the graphics '
                     'were terrible. I would not recommend this movie.')
 sample_text_cleaned = CleanText().cleanText(sample_text)
@@ -66,6 +67,7 @@ model.predict([sample_text])
 #### GloVe embedding layer (subject to change)
 ```python
 from Sentiment140Dataset import Sentiment140Dataset
+from clean_text import CleanText
 
 s140 = Sentiment140Dataset(path=CONSTS.PATHS.SENTIMENT140_DATASET, 
                                 embeddingDim=CONSTS.GLOVE.GLOVE_DIM, 
