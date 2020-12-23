@@ -185,7 +185,7 @@ class TensorflowModels:
                             verbose=2)
                             
         model.summary()
-        #model.save(modelPath)          
+        model.save(modelPath)          
             
         return model, history
             
