@@ -38,6 +38,7 @@ from tensorflow.keras.optimizers import Adam
 class TensorflowModels:
     def loadDataset(self, LOAD_GLOVE, padInput, logger, cleanFN = CleanText().cleanText, Tokanize=True, BERT = False):    
         s140 = Sentiment140Dataset(path=CONSTS.PATHS.SENTIMENT140_DATASET, 
+                                   parsedPath = CONSTS.PATHS.SENTIMENT140_DATASET.SENTIMENT140_DATASET_PARSED,
                                 embeddingDim=CONSTS.GLOVE.GLOVE_DIM, 
                                 MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH, 
                                 logger = logger)

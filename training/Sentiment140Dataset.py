@@ -8,10 +8,13 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.preprocessing import LabelEncoder
 import logging
 import time
+import os.path
+import csv
 
 class Sentiment140Dataset:        
-    def __init__(self, path, embeddingDim, logger, MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH):
+    def __init__(self, path, parsedPath, embeddingDim, logger, MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH):
         self.path = path
+        self.parsedPath = parsedPath
         self.tokenizer = None
         self.embeddingDim = embeddingDim
         self.MAX_SEQUENCE_LENGTH=MAX_SEQUENCE_LENGTH
@@ -21,11 +24,9 @@ class Sentiment140Dataset:
         
     def load(self, cleanFN, TRAIN_SIZE=0.8, padInput=True, DEBUG=False, Tokanize=True, BERT=False):
         # Read Data
-        self.logger.debug('[Sentiment140] Reading Sentiment Dataset')
-        startTime = time.time()
-        
-        dataset = pd.read_csv(self.path, encoding ="ISO-8859-1" , names=["sentiment", "ids", "date", "flag", "user", "text"]) \
-                    .drop(["ids", "date", "flag", "user"], axis=1) 
+        self.logger.debug('[Sentiment140] Reading Sentiment Dataset')       
+        startTime = time.time()  
+        dataset = self.__load_dataset(cleanFN)
                     
         data_rows = CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES if CONSTS.TRAINING.NUMBER_OF_TRAINING_DATA_ENTRIES is not None else len(dataset)
                 
@@ -45,10 +46,10 @@ class Sentiment140Dataset:
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done]')   
         train_data, test_data = train_test_split(dataset, test_size=1-TRAIN_SIZE, random_state=7)
         
-        self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
-        #dataset['text'] = dataset['text'].apply(cleanFN)  
-        train_data['text'] = train_data['text'].apply(cleanFN)  
-        test_data['text'] = test_data['text'].apply(cleanFN)  
+        #self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
+        ##dataset['text'] = dataset['text'].apply(cleanFN)  
+        #train_data['text'] = train_data['text'].apply(cleanFN)  
+        #test_data['text'] = test_data['text'].apply(cleanFN)  
         
         self.logger.debug('[Sentiment140] Tokanize Text')   
         if Tokanize:
@@ -70,9 +71,34 @@ class Sentiment140Dataset:
         self.logger.debug('[Sentiment140] LabelEncode')
         labelEncoder, y_train, y_test = self.transformLabel(targets = train_data.sentiment, trainingCorpus = train_data.sentiment, validationCorpus = test_data.sentiment)
         
-        self.logger.debug('[Sentiment140] Clean Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
+        self.logger.debug('[Sentiment140] LabelEncode [DONE]')
                 
         return ((x_train, y_train), (x_test, y_test), labelEncoder) 
+    
+    def __load_dataset(self, cleanFN, forceReload = False):
+        '''
+            Load Sentiment140 from Disk 
+            ForceReload = force to reparse Data 
+        '''
+        isDatasetParsed = os.path.isfile(CONSTS.PATHS.SENTIMENT140_DATASET_PARSED) and not forceReload
+        
+        filePath = self.parsedPath if isDatasetParsed else self.path
+        
+        dataset = pd.read_csv(filePath, encoding ="ISO-8859-1" , names=["sentiment", "ids", "date", "flag", "user", "text"])                                      
+                    
+        if not isDatasetParsed:
+            startTime = time.time()                    
+            self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
+            dataset['text'] = dataset['text'].apply(cleanFN) 
+            self.logger.debug('[Sentiment140] Clean Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
+            dataset.to_csv(self.parsedPath, encoding ="ISO-8859-1", index=False, header=False, quoting=csv.QUOTE_ALL)           
+        else:
+            self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done] (Read from Drive)')   
+        return dataset.drop(["ids", "date", "flag", "user"], axis=1)
+    
+    # , names=["sentiment", "ids", "date", "flag", "user", "text"])
+        
+            
     
     def transformLabel(self, targets, trainingCorpus, validationCorpus):
         labelEncoder = LabelEncoder()

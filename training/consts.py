@@ -10,6 +10,7 @@ class PATHS:
     MODEL_CHECKPOINTS = RESULTS_BASE + "/model_checkpoints/"
     MODEL = RESULTS_BASE + "/model/"
     SENTIMENT140_DATASET = "../data/sentiment140/training.1600000.processed.noemoticon.csv" ##BASE +"\\Datasets\Sentiment140_twitter\\training.1600000.processed.noemoticon.csv"
+    SENTIMENT140_DATASET_PARSED = "../data/sentiment140/training_parsed.csv"
     TRAINING_RESULT_CSV = (RESULTS_BASE, "result.csv") #path, filename
     
     
@@ -27,7 +28,7 @@ class TRAINING:
     BATCH_SIZE = 1024
     
 class PREPROCESSING:
-    MAX_SEQUENCE_LENGTH = 30#144 #1000
+    MAX_SEQUENCE_LENGTH = 144#144 #1000
     
     
 
