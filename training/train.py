@@ -88,28 +88,14 @@ loggingFile = Logging.createLogPath(GLOVE = args.glove,
 logger = Logging.getLogger(loggingFile = loggingFile, consoleLogging = True, logginLevel = logging.DEBUG)
 #loadModel testModel
 
-#model, history = TensorflowModels().loadModel(GLOVE = args.glove, 
-            #CNN_LAYER = args.layer_CNN, 
-            #POOLING_LAYER = args.layer_POOLING, 
-            #GRU_LAYER = args.layer_GRU, 
-            #BiLSTM_Layer = args.layer_BiLSTM, 
-            #LSTM_Layer = args.layer_LSTM, 
-            #DENSE_LAYER = args.layer_DENSE,
-            #logger = logger)
+           
 if("validate" in args.mode):
     print("VALIDATE")
-    #model = passArguments(TensorflowModels().loadModel, args)
+    model = passArguments(TensorflowModels().loadModel, args)
 elif ("train" in args.mode):
     print("TRAIN")
-    #model, history = passArguments(TensorflowModels().trainModel, args)
+    model, history = passArguments(TensorflowModels().trainModel, args)
 
-    #Logging.loggingResult(history, GLOVE = args.glove, 
-#                CNN_LAYER = args.layer_CNN, 
-#                POOLING_LAYER = args.layer_POOLING, 
-#                GRU_LAYER = args.layer_GRU, 
-#                LSTM_Layer = args.layer_LSTM, 
-#                BiLSTM_Layer = args.layer_BiLSTM, 
-#                DENSE_LAYER = args.layer_DENSE)
 elif ("permutations" in args.mode):
     for model in getModelPermutations(prefix="python train.py train "):
         print(model)
