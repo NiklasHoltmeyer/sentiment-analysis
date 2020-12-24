@@ -10,7 +10,8 @@ import logging
 import time
 import os.path
 import csv
-
+import sys
+import numpy as np 
 class Sentiment140Dataset:        
     def __init__(self, path, parsedPath, embeddingDim, logger, MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH):
         self.path = path
@@ -44,13 +45,8 @@ class Sentiment140Dataset:
 
         #Tokenizer
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done]')   
-        train_data, test_data = train_test_split(dataset, test_size=1-TRAIN_SIZE, random_state=7)
-        
-        #self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
-        ##dataset['text'] = dataset['text'].apply(cleanFN)  
-        #train_data['text'] = train_data['text'].apply(cleanFN)  
-        #test_data['text'] = test_data['text'].apply(cleanFN)  
-        
+        train_data, test_data = train_test_split(dataset, test_size=1-TRAIN_SIZE, random_state=7)    
+       
         self.logger.debug('[Sentiment140] Tokanize Text')   
         if Tokanize:
             self.tokenizer = self.loadTokenizer(train_data.text)
@@ -75,7 +71,7 @@ class Sentiment140Dataset:
                 
         return ((x_train, y_train), (x_test, y_test), labelEncoder) 
     
-    def __load_dataset(self, cleanFN, forceReload = False):
+    def __load_dataset(self, cleanFN, forceReload = False, depth=0):
         '''
             Load Sentiment140 from Disk 
             ForceReload = force to reparse Data 
@@ -85,13 +81,21 @@ class Sentiment140Dataset:
         filePath = self.parsedPath if isDatasetParsed else self.path
         
         dataset = pd.read_csv(filePath, encoding ="ISO-8859-1" , names=["sentiment", "ids", "date", "flag", "user", "text"])                                      
-                    
+        dataset['text'].replace('', np.nan, inplace=True)
+        dataset.dropna(subset=['text'], inplace=True)
+           
         if not isDatasetParsed:
             startTime = time.time()                    
             self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
             dataset['text'] = dataset['text'].apply(cleanFN) 
             self.logger.debug('[Sentiment140] Clean Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
             dataset.to_csv(self.parsedPath, encoding ="ISO-8859-1", index=False, header=False, quoting=csv.QUOTE_ALL)           
+            
+            if depth > 1:
+                self.logger.error('[Sentiment140] Reading Data cyclic recursion')
+                sys.exit(1)
+            
+            return self.__load_dataset(cleanFN, forceReload, depth=depth+1)
         else:
             self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done] (Read from Drive)')   
         return dataset.drop(["ids", "date", "flag", "user"], axis=1)
@@ -110,7 +114,7 @@ class Sentiment140Dataset:
         return (labelEncoder, y_train, y_test)
     
     def loadTokenizer(self, corpus):
-        tokenizer = Tokenizer()
+        tokenizer = Tokenizer()  
         tokenizer.fit_on_texts(corpus)
         self.vocab_size  = len(tokenizer.word_index) + 1
         self.tokenizer = tokenizer
