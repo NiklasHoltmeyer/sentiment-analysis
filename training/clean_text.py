@@ -23,15 +23,17 @@ class CleanText:
           '<(-_-)>': 'robot', 'd[-_-]b': 'dj', ":'-)": 'sadsmile', ';)': 'wink', 
           ';-)': 'wink', 'O:-)': 'angel','O*-)': 'angel','(:-D': 'gossip', '=^.^=': 'cat'}
     
+    stopWords = ["i", "me", "my", "myself", "we", "our", "ours", "ourselves", "you", "you're", "you've", "you'll", "you'd", "your", "yours", "yourself", "yourselves", "he", "him", "his", "himself", "she", "she's", "her", "hers", "herself", "it", "it's", "its", "itself", "they", "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", "that'll", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "having", "do", "does", "did", "doing", "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "so", "than", "too", "very", "s", "t", "can", "will", "just", "now", "d", "ll", "m", "o", "re", "ve", "y", "ain"]
+    
     def __init__(self):    
         if CleanText._firstInstance:
             CleanText._firstInstance = False
             
-            nltk.download('stopwords')
+            #nltk.download('stopwords')
             nltk.download('punkt')
             nltk.download('wordnet') #<- für lemmatazing
             
-            CleanText.stopWords = stopwords.words('english') #the, ...
+            CleanText.stopWords = CleanText.stopWords#stopwords.words('english') #the, ... -> nltk stop words contain not, dont, ...
             CleanText.stemmerFN = SnowballStemmer("english").stem #zum finden des wort-stammes   
             CleanText.cleanPattern = CleanText.regpexpCleanPatterns()
             
@@ -50,6 +52,7 @@ class CleanText:
             text = re.sub(pattern, replace, text)
         
         text = contractions.fix(text).lower() ##bspw. you've -> you have
+        
         text = self.removestopWordsAndNonAlphabetic(text)               
         text = self.lemmantizing(text)
         #output_data = tf.strings.regex_replace(output_data,"(\s){2,}", "")   #multiple whitespaces
