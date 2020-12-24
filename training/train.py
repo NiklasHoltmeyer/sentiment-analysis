@@ -4,7 +4,6 @@ import logging
 import consts as CONSTS # GLOBAL, PATHS, GLOVE, TRAINING, PREPROCESSING
 from TensorflowHelper import Callbacks, Encoder, Logging
 from TensorflowModels import TensorflowModels
-
 #endregion
 
 def str2bool(v):
@@ -28,9 +27,38 @@ def passArguments(function, args):
                 DENSE_LAYER = args.layer_DENSE,
                 logger = logger)
     
+def getModelPermutations(prefix=""):
+    embeddingLayers = ["--glove", "word2vec"]
+    hiddenLayers = [ 
+                "--layer_CNN", 
+                "--layer_POOLING", 
+                "--layer_GRU", 
+                "--layer_BiLSTM", 
+                "--layer_LSTM", 
+                "--layer_DENSE"]
+
+    hiddenLayerCount = len(hiddenLayers)
+    hiddenLayerPermutations = 2**hiddenLayerCount - 1
+
+    hiddenPermutations = []
+    for permutation in range(hiddenLayerPermutations, 0, -1):   
+        flags = []
+        for idx, layer in enumerate(hiddenLayers):
+            if (permutation & (1 << (idx))):
+                flags.append("{} 1".format(layer))
+        hiddenPermutations.append(" ".join(flags))
+
+    cmds = []
+    for embeddingLayer in embeddingLayers:
+        embeddingLayerFlag = embeddingLayer + " 1" if embeddingLayer.startswith("--") else ""
+        for hiddenPermutation in hiddenPermutations:
+            cmd = "{} {} {}".format(prefix, embeddingLayerFlag, hiddenPermutation).replace("  ", " ")
+            cmds.append(cmd)
+    return cmds
+    
 parser = argparse.ArgumentParser()
 
-parser.add_argument("mode", choices=['train', 'validate'])
+parser.add_argument("mode", choices=['train', 'validate', 'permutations'], help="[train] = train model, \n [validate] = test model against validation data, [permutations] = get all possible models to train \n")
 
 parser.add_argument('--glove', type=str2bool, nargs='?',
                         const=True, default=False,
@@ -70,20 +98,21 @@ logger = Logging.getLogger(loggingFile = loggingFile, consoleLogging = True, log
             #logger = logger)
 if("validate" in args.mode):
     print("VALIDATE")
-    model = passArguments(TensorflowModels().loadModel, args)
+    #model = passArguments(TensorflowModels().loadModel, args)
 elif ("train" in args.mode):
     print("TRAIN")
-    model, history = passArguments(TensorflowModels().trainModel, args)
+    #model, history = passArguments(TensorflowModels().trainModel, args)
 
-    Logging.loggingResult(history, GLOVE = args.glove, 
-                CNN_LAYER = args.layer_CNN, 
-                POOLING_LAYER = args.layer_POOLING, 
-                GRU_LAYER = args.layer_GRU, 
-                LSTM_Layer = args.layer_LSTM, 
-                BiLSTM_Layer = args.layer_BiLSTM, 
-                DENSE_LAYER = args.layer_DENSE)
-
-
+    #Logging.loggingResult(history, GLOVE = args.glove, 
+#                CNN_LAYER = args.layer_CNN, 
+#                POOLING_LAYER = args.layer_POOLING, 
+#                GRU_LAYER = args.layer_GRU, 
+#                LSTM_Layer = args.layer_LSTM, 
+#                BiLSTM_Layer = args.layer_BiLSTM, 
+#                DENSE_LAYER = args.layer_DENSE)
+elif ("permutations" in args.mode):
+    for model in getModelPermutations(prefix="python train.py train "):
+        print(model)
 
 
 
