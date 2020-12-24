@@ -67,7 +67,7 @@ class TensorflowModels:
         return model
 
     def addGRULayer(self, model):
-        model.add(GRU(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))
+        model.add(GRU(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1))
         model.add(GRU(256))
         return model
 
@@ -132,15 +132,15 @@ class TensorflowModels:
         model, train_data, test_data = self.baseModelGlove(logger) if GLOVE else self.baseModelNonGlove(logger)
         trainX, trainY = train_data
         logger.debug(("[Model] with Glove" if GLOVE else "[Model] Selftrained Word2Vec"))
-        
+
         if CNN_LAYER:
             logger.debug("[Model] Add CNN_LAYER")
             model = self.addCNNLayer(model)
         
         if POOLING_LAYER:
             logger.debug("[Model] Add POOLING_LAYER")
-            model = self.addCNNLayer(model)
-            
+            model = self.addCNNLayer(model)  
+        
         if GRU_LAYER:
             logger.debug("[Model] Add GRU_LAYER")
             model = self.addGRULayer(model)
