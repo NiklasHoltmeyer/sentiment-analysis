@@ -66,19 +66,19 @@ class TensorflowModels:
         model.add(MaxPool1D(pool_size = 2))
         return model
 
-    def addGRULayer(self, model):
+    def addGRULayer(self, model, return_sequences=False):
         model.add(GRU(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1))
-        model.add(GRU(256))
+        model.add(GRU(256, return_sequences=return_sequences))
         return model
 
-    def addLSTMLayer(self, model):
+    def addLSTMLayer(self, model, return_sequences=False):
         model.add(LSTM(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1))
-        model.add(LSTM(256))
+        model.add(LSTM(256, return_sequences=return_sequences))
         return model
 
-    def addBiLSTMLayer(self, model):
+    def addBiLSTMLayer(self, model, return_sequences=False):
         model.add(Bidirectional(LSTM(256, return_sequences=True, dropout=0.2, recurrent_dropout=0.2, implementation=1)))
-        model.add(Bidirectional(LSTM(256)))
+        model.add(Bidirectional(LSTM(256, return_sequences=return_sequences)))
         return model
 
     def addDenseLayer(self, model):
@@ -143,15 +143,18 @@ class TensorflowModels:
         
         if GRU_LAYER:
             logger.debug("[Model] Add GRU_LAYER")
-            model = self.addGRULayer(model)
+            returnSequences = BiLSTM_Layer or LSTM_Layer # only if next layer = RNN
+            model = self.addGRULayer(model, returnSequences)
         
         if BiLSTM_Layer:        
             logger.debug("[Model] Add BiLSTM_Layer")
-            model = self.addBiLSTMLayer(model)
+            returnSequences = LSTM_Layer # only if next layer = RNN
+            model = self.addBiLSTMLayer(model, returnSequences)
 
         if LSTM_Layer:
             logger.debug("[Model] Add LSTM_Layer")
-            model = self.addLSTMLayer(model)
+            returnSequences = False
+            model = self.addLSTMLayer(model, returnSequences)
         
         if DENSE_LAYER:
             logger.debug("[Model] Add DENSE_LAYER")
