@@ -62,6 +62,7 @@ from Sentiment140Dataset import Sentiment140Dataset
 from clean_text import CleanText
 
 s140 = Sentiment140Dataset(path=CONSTS.PATHS.SENTIMENT140_DATASET, 
+                                parsedPath=CONSTS.PATHS.SENTIMENT140_DATASET_PARSED,
                                 embeddingDim=CONSTS.GLOVE.GLOVE_DIM, 
                                 MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH, 
                                 logger = logger)
