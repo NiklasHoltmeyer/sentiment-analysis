@@ -11,6 +11,9 @@ class PATHS:
     MODEL = RESULTS_BASE + "/model/"
     SENTIMENT140_DATASET = "../data/sentiment140/training.1600000.processed.noemoticon.csv" ##BASE +"\\Datasets\Sentiment140_twitter\\training.1600000.processed.noemoticon.csv"
     SENTIMENT140_DATASET_PARSED = "../data/sentiment140/training_parsed.csv"
+    
+    IMDB_DATASET = "../data/aclImdb/aclImdb.csv"
+    IMDB_DATASET_Parsed = "../data/aclImdb/aclImdb_parsed.csv"
     TRAINING_RESULT_CSV = (RESULTS_BASE, "result.csv") #path, filename
     
     
