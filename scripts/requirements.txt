@@ -4,3 +4,8 @@ matplotlib
 nltk 
 chakin 
 contractions
+
+torch
+transformers
+simpletransformers
+tqdm 
