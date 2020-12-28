@@ -61,7 +61,7 @@ class Sentiment140Dataset:
             self.logger.debug('[Sentiment140] Pad Input (disabled)') 
             
         if BERT:
-            return train_data, test_data, labelEncoder
+            return train_data, test_data, None
         
         #Transform Output
         self.logger.debug('[Sentiment140] LabelEncode')
