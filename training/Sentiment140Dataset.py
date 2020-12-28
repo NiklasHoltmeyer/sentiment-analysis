@@ -40,9 +40,6 @@ class Sentiment140Dataset:
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Sentiment)')
         dataset['sentiment'] = dataset['sentiment'].apply(Sentiment140Dataset.decodeSentiment)
         
-        if DEBUG:
-            dataset['sentiment'].hist()
-
         #Tokenizer
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done]')   
         train_data, test_data = train_test_split(dataset, test_size=1-TRAIN_SIZE, random_state=7)    
