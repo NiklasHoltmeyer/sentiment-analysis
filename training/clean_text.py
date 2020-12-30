@@ -59,6 +59,22 @@ class CleanText:
         
         return text
     
+    def cleanTextTransformer(self, text):
+        '''Make text lowercase, remove text in square brackets,remove links,remove punctuation
+        and remove words containing numbers.'''
+        #Based on: https://www.kaggle.com/tanulsingh077/twitter-sentiment-extaction-analysis-eda-and-model 
+        # https://www.kaggle.com/avramandrei96/short-and-simple-lstm-with-glove-embeddings
+        # ...
+        #text = str(text).lower()
+        text = self.replaceEmojiis(text)            
+        for pattern, replace in CleanText.cleanPattern:
+            text = re.sub(pattern, replace, text)            
+        text = contractions.fix(text)#.lower() ##bspw. you've -> you have            
+        #text = self.removeNonAlphabetic(text) #removestopWordsAndNonAlphabetic(text)               
+        text = self.lemmantizing(text)
+        #output_data = tf.strings.regex_replace(output_data,"(\s){2,}", "")   #multiple whitespaces            
+        return text
+    
     def regpexpCleanPatterns():
         #Based on: https://www.kaggle.com/tanulsingh077/twitter-sentiment-extaction-analysis-eda-and-model 
         # https://www.kaggle.com/avramandrei96/short-and-simple-lstm-with-glove-embeddings
@@ -68,15 +84,15 @@ class CleanText:
                 #('(:|;)(\(|c|<)', 'sad'), #  :( :c :<,  ;( ;c ;<, 
                 #('(\)|>)(:|;)', 'sad'), # ); >;
                 ('\[.*?\]', ''), 
-                ('https?://\S+|www\.\S+', ''), 
-                ('<.*?>+', ''), 
+                ('https?://\S+|www\.\S+', 'URL'), 
+                ('<.*?>+', 'HTML'), 
                 ('[%s]' % re.escape(string.punctuation), ''), 
                 ('\n', ''), 
                 ('\w*\d\w*', ''),     
-                ('<[^>]+>', ''),  #html
+                ('<[^>]+>', 'HTML'),  #html
                 ('@[a-zA-Z0-9_]+', 'user'), ##@...      
                 ('#[a-zA-Z0-9_]+', 'hashtag'), #tag
-                ('%', "prozent"), #noise
+                ('%', "percentage"), #noise
                 ("\x89", ""), #noise
                 ("hÛ_", ""), #noise
                 ("ÛÓ", "") #noise
@@ -106,3 +122,8 @@ class CleanText:
         #based On https://pythonhealthcare.org/2018/12/14/101-pre-processing-data-tokenization-stemming-and-removal-of-stop-words/
         tokens = nltk.word_tokenize(text)
         return " ".join([token for token in tokens if token.isalpha() and token not in CleanText.stopWords])
+    
+    def removeNonAlphabetic(self,text):
+        #based On https://pythonhealthcare.org/2018/12/14/101-pre-processing-data-tokenization-stemming-and-removal-of-stop-words/
+        tokens = nltk.word_tokenize(text)
+        return " ".join([token for token in tokens if token.isalpha()])
