@@ -8,6 +8,8 @@ from nltk.stem import SnowballStemmer
 from nltk.tokenize import TweetTokenizer
 from nltk.stem import WordNetLemmatizer
 
+import emoji
+
 class CleanText:     
     _firstInstance = True #<- Stemmer-Daten runterladen, falls erste Instanz
     stemmerFN = None       
@@ -46,7 +48,8 @@ class CleanText:
         # https://www.kaggle.com/avramandrei96/short-and-simple-lstm-with-glove-embeddings
         # ...
         text = str(text).lower()
-        text = self.replaceEmojiis(text)
+        text = self.replaceEmojiis(text) #-> :) => happy
+        text = emoji.demojize(text)      #emojii (icon) -> :thumps_up:
         
         for pattern, replace in CleanText.cleanPattern:
             text = re.sub(pattern, replace, text)
@@ -66,7 +69,9 @@ class CleanText:
         # https://www.kaggle.com/avramandrei96/short-and-simple-lstm-with-glove-embeddings
         # ...
         #text = str(text).lower()
-        text = self.replaceEmojiis(text)            
+        text = self.replaceEmojiis(text) #-> :) => happy
+        text = emoji.demojize(text)      #emojii (icon) -> :thumps_up:
+                  
         for pattern, replace in CleanText.cleanPattern:
             text = re.sub(pattern, replace, text)            
         text = contractions.fix(text)#.lower() ##bspw. you've -> you have            
