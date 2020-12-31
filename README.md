@@ -17,9 +17,7 @@ bash ./scripts/0_install_prerequisites.sh
 ## Usage
 ### Training
 ```python
-import consts as CONSTS # GLOBAL, PATHS, GLOVE, TRAINING, PREPROCESSING
-from TensorflowHelper import Callbacks, Encoder, Logging
-from TensorflowModels import TensorflowModels
+from DeepSentiment.Networks.Tensorflow.Model import Model as TFModel
 import logging
 
 logging.basicConfig(
@@ -31,12 +29,12 @@ logger = logging.getLogger("sentiment")
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 logging.getLogger("nltk_data").setLevel(logging.WARNING)
 
-model, history = TensorflowModels().trainModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
+model, history = TFModel().trainModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
             POOLING_LAYER = True, 
             BiLSTM_Layer = True, 
             logger = logger)
             
-#model, history = TensorflowModels().trainModel(GLOVE = True, 
+#model, history = TFModel().trainModel(GLOVE = True, 
 #            CNN_LAYER = True 
 #            POOLING_LAYER = True 
 #            GRU_LAYER = True 
@@ -46,10 +44,18 @@ model, history = TensorflowModels().trainModel(CNN_LAYER = True,  #self-trained 
 #            logger = logger)
 
 ```
+### Load Model
+```python
+model = TFModel().loadModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
+            POOLING_LAYER = True, 
+            BiLSTM_Layer = True, 
+            logger = logger)
+```
 ### Prediction
 #### self-trained embedding layer (Word2Vec)
 ```python
-from clean_text import CleanText
+from DeepSentiment.Preprocessing.CleanText import CleanText
+
 sample_text = ('The movie was not good. The animation and the graphics '
                     'were terrible. I would not recommend this movie.')
 sample_text_cleaned = CleanText().cleanText(sample_text)
@@ -58,17 +64,25 @@ model.predict([sample_text])
 
 #### GloVe embedding layer (subject to change)
 ```python
-from Sentiment140Dataset import Sentiment140Dataset
-from clean_text import CleanText
+from DeepSentiment.Preprocessing.CleanText import CleanText
+from DeepSentiment.Dataset import Sentiment140
+from DeepSentiment.Consts import (
+    Global as Global, 
+    Glove as Glove, 
+    Paths as Paths, 
+    Preprocessing as Preprocessing, 
+    Training as Training 
+)
 
-s140 = Sentiment140Dataset(path=CONSTS.PATHS.SENTIMENT140_DATASET, 
-                                parsedPath=CONSTS.PATHS.SENTIMENT140_DATASET_PARSED,
-                                embeddingDim=CONSTS.GLOVE.GLOVE_DIM, 
-                                MAX_SEQUENCE_LENGTH=CONSTS.PREPROCESSING.MAX_SEQUENCE_LENGTH, 
+
+s140 = Sentiment140.Dataset(path=Paths.SENTIMENT140_DATASET, 
+                                parsedPath=Paths.SENTIMENT140_DATASET_PARSED,
+                                embeddingDim=Glove.GLOVE_DIM, 
+                                MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH, 
                                 logger = logger)
 train_data, test_data, labelDecoder = s140.load(padInput=True, 
-                                                TRAIN_SIZE=CONSTS.TRAINING.TRAIN_SIZE, 
-                                                        DEBUG=CONSTS.GLOBAL.DEBUG, 
+                                                TRAIN_SIZE=Training.TRAIN_SIZE, 
+                                                        DEBUG=Global.DEBUG, 
                                                         cleanFN = CleanText().cleanText,
                                                         Tokanize = True,
                                                         BERT = False)
@@ -77,5 +91,5 @@ sample_text = ('The movie was not good. The animation and the graphics '
                     'were terrible. I would not recommend this movie.')
 sample_text_cleaned = CleanText().cleanText(sample_text)
 sample_text_glove = s140.padInput(sample_text_cleaned)
-model.predict([sample_text_glove])
+predictions = model.predict([sample_text_glove])
 ```
