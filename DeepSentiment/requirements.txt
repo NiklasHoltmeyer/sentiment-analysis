@@ -1,0 +1,11 @@
+tqdm>=4.47.0
+tensorflow 
+pandas 
+matplotlib 
+nltk 
+chakin 
+contractions
+emoji
+
+transformers
+simpletransformers
