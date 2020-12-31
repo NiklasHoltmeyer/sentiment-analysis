@@ -17,8 +17,8 @@ unzip -n -d "$SCRIPTPATH/../data/glove" "$SCRIPTPATH/../data/glove/glove.twitter
 
 #DeepSentiment
 cd "$deepSentimentFolder"
-pip install -q -r requirements.txt
-pip install --ignore-installed --progress-bar off -q -e .
+pip install -U -q -r requirements.txt
+pip install -U --ignore-installed --progress-bar off -q -e .
 
 mkdir -p "$baseDir/training"
 cd "$baseDir/training"
