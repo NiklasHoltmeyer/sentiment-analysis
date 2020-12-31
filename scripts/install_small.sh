@@ -11,9 +11,9 @@ wget -nc https://nyc3.digitaloceanspaces.com/ml-files-distro/v1/sentiment-analys
 unzip -n -d "$SCRIPTPATH/../data/sentiment140/" "$SCRIPTPATH/../data/sentiment140/training.1600000.processed.noemoticon.csv.zip"
 
 # Glove
-mkdir -p "$SCRIPTPATH/../data/glove"
-wget -nc http://nlp.stanford.edu/data/glove.twitter.27B.zip -P "$SCRIPTPATH/../data/glove"
-unzip -n -d "$SCRIPTPATH/../data/glove" "$SCRIPTPATH/../data/glove/glove.twitter.27B.zip"
+#mkdir -p "$SCRIPTPATH/../data/glove"
+#wget -nc http://nlp.stanford.edu/data/glove.twitter.27B.zip -P "$SCRIPTPATH/../data/glove"
+#unzip -n -d "$SCRIPTPATH/../data/glove" "$SCRIPTPATH/../data/glove/glove.twitter.27B.zip"
 
 #DeepSentiment
 cd "$deepSentimentFolder"
