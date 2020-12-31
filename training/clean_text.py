@@ -68,13 +68,13 @@ class CleanText:
         #Based on: https://www.kaggle.com/tanulsingh077/twitter-sentiment-extaction-analysis-eda-and-model 
         # https://www.kaggle.com/avramandrei96/short-and-simple-lstm-with-glove-embeddings
         # ...
-        #text = str(text).lower()
+        text = str(text).lower()
         text = self.replaceEmojiis(text) #-> :) => happy
         text = emoji.demojize(text)      #emojii (icon) -> :thumps_up:
                   
         for pattern, replace in CleanText.cleanPattern:
             text = re.sub(pattern, replace, text)            
-        text = contractions.fix(text)#.lower() ##bspw. you've -> you have            
+        text = contractions.fix(text).lower() ##bspw. you've -> you have            
         #text = self.removeNonAlphabetic(text) #removestopWordsAndNonAlphabetic(text)               
         text = self.lemmantizing(text)
         #output_data = tf.strings.regex_replace(output_data,"(\s){2,}", "")   #multiple whitespaces            

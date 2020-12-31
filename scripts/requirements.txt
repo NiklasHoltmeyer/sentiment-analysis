@@ -4,8 +4,8 @@ matplotlib
 nltk 
 chakin 
 contractions
+emoji
 
-torch
 transformers
 simpletransformers
 tqdm 
