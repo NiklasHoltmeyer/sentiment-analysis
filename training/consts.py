@@ -23,7 +23,7 @@ class GLOVE:
     
 class TRAINING:
     TRAIN_SIZE = 0.8
-    EPOCHS = 50
+    EPOCHS = 1
     Learning_Rate = 1e-3
     EARLY_STOPPING_MIN = 1e-3
     EARLY_STOPPING_PATIENCE = 5
