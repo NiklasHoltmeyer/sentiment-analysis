@@ -22,7 +22,6 @@ from tensorflow.keras.layers import Conv1D, Bidirectional, LSTM, Dense, Input, D
 from tensorflow.keras import Sequential
 
 #Glove
-import chakin # download glove
 from collections import defaultdict
 import logging
 import sys
