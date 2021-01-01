@@ -69,13 +69,13 @@ class Model:
         test_data["labels"] = test_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         train_data["labels"] = train_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         
-        size = args["number_of_training_data_entries"]
-        sizeSecond = int(size * 0.2) if size is not None else None        
+#        size = args["number_of_training_data_entries"]
+#        sizeSecond = int(size * 0.2) if size is not None else None        
         
-        train_shuffeld = train_data.sample(n=size, random_state=42) if size is not None else train_data.sample(n=len(train_data), random_state=42)
-        test_shuffeld = test_data.sample(n=sizeSecond, random_state=42)  if sizeSecond is not None else test_data.sample(n=len(test_data), random_state=42)
+#        train_shuffeld = train_data.sample(n=size, random_state=42) if size is not None else train_data.sample(n=len(train_data), random_state=42)
+#        test_shuffeld = test_data.sample(n=sizeSecond, random_state=42)  if sizeSecond is not None else test_data.sample(n=len(test_data), random_state=42)
         
-        return train_shuffeld, test_shuffeld
+        return train_data, test_data
     
     def load(self, folder, modelName="model"): 
         ''' Path = e.G. f"{Paths.RESULTS_BASE}/transformer_{model_name}_e5_{size}" '''
