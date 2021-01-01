@@ -20,7 +20,7 @@ setup(
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
         'tqdm==4.55.0',
-        'pandas==1.2.0',
+        'pandas==1.1.5', #1.2.0
         'matplotlib==3.3.3',
         'chakin==0.0.8',
         'contractions==0.0.43',
