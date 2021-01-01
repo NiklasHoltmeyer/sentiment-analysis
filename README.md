@@ -19,7 +19,7 @@ bash ./scripts/0_install_prerequisites.sh
 ```python
 from DeepSentiment.Networks.Tensorflow.Model import Model as TFModel
 
-args = {'num_train_epochs': 1} #override Trainings Settings see  ref
+args = {'num_train_epochs': 1} #override Trainings Settings see  [DeepSentiment/Consts/Training.py]
 
 model, history = TFModel().trainModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
             POOLING_LAYER = True, 

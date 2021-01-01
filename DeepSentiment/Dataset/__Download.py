@@ -11,9 +11,9 @@ import chakin
 
 from DeepSentiment.Consts import (Glove as GLOVE, Paths as PATHS )
 
-def downloadGlove(gloveFolderPath, gloveDim = 100):
+def downloadGlove(gloveFolderPath, gloveDim = 100): #<- downloads every Dimension, so the indx doesnt really matter
     gloveTwitterIDX = {  '25' : 17, "50" : 18, "100" : 19, "200" : 20 } #key = dim, value = index
-    chakinIDX = gloveTwitterIDX[str(GLOVE_DIM)]
+    chakinIDX = gloveTwitterIDX[str(gloveDim)]
     zipFile = chakin.download(number=chakinIDX, save_dir='./tmp/glove')
     
     ##unzip
@@ -46,7 +46,7 @@ def downloadSentiment140(zipUrl, folder, file):
 sentiFilePath = Path(PATHS.SENTIMENT140_DATASET)
 gloveFilePath = Path(GLOVE.GLOVE_FILENAME)
 
-sentiFolder, sentiFileName, sentiURL = sentiFilePath.parent.resolve(), sentiFilePath.name.resolve(), PATHS.SENTIMENT140_URL
+sentiFolder, sentiFileName, sentiURL = sentiFilePath.parent, sentiFilePath.name, PATHS.SENTIMENT140_URL
 gloveFolder = gloveFilePath.parent
 
 if not gloveFolder.exists():
