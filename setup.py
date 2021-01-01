@@ -40,8 +40,8 @@ setup(
         'tfa-nightly==0.13.0.dev20201223200403',
         'tfds-nightly==4.1.0.dev202012260107',
         'tokenizers==0.9.4',
-        'torch==1.6.0+cu101',
-        'torchvision==0.7.0+cu101',
+        'torch==1.6.0+cu101',  #Cuda 10.1
+        'torchvision==0.7.0+cu101', #Cuda 10.1
         #'torch',
         #'torchvision',
         'transformers',
