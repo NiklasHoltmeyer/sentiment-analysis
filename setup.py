@@ -16,6 +16,6 @@ setup(
     author='Niklas Holtmeyer',
     url='https://github.com/NiklasHoltmeyer/sentiment-analysis',
     license=license,
-    scripts=["scripts/install_prerequisites.sh"]    
+    scripts=["scripts/install_prerequisites.sh"],    
     packages=find_packages(exclude=('tests', 'docs')),
 )
