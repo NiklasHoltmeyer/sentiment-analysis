@@ -18,8 +18,8 @@ import sys
 import numpy as np 
 from DeepSentiment.Logging import Logger as DeepLogger
 
-from tqdm._tqdm_notebook import tqdm_notebook
-
+from tqdm.auto import tqdm
+tqdm.pandas()
 class Dataset:        
     def __init__(self, path, parsedPath, embeddingDim, args, MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH, logger=DeepLogger.defaultLogger()):
         self.path = path
@@ -48,7 +48,6 @@ class Dataset:
         startTime = time.time()        
         
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Sentiment)')
-        tqdm_notebook.pandas()
         
         dataset['sentiment'] = dataset['sentiment'].progress_apply(Dataset.decodeSentiment)
         
@@ -96,7 +95,7 @@ class Dataset:
         if not isDatasetParsed:
             startTime = time.time()                    
             self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Text)')
-            dataset['text'] = dataset['text'].apply(cleanFN) 
+            dataset['text'] = dataset['text'].progress_apply(cleanFN) 
             self.logger.debug('[Sentiment140] Clean Sentiment Dataset [DONE] - {} seconds'.format(time.time() - startTime))
             dataset.to_csv(self.parsedPath, encoding ="ISO-8859-1", index=False, header=False, quoting=csv.QUOTE_ALL)           
             
