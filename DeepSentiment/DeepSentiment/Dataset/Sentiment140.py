@@ -2,8 +2,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from DeepSentiment.Consts import (
     Paths as Paths, 
-    Preprocessing as Preprocessing, 
-    Training as Training 
+    Preprocessing as Preprocessing
 )
 
 import pandas as pd
@@ -17,24 +16,28 @@ import os.path
 import csv
 import sys
 import numpy as np 
+from DeepSentiment.Logging import Logger as DeepLogger
+
 class Dataset:        
-    def __init__(self, path, parsedPath, embeddingDim, logger, MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH):
+    def __init__(self, path, parsedPath, embeddingDim, args, MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH, logger=DeepLogger.defaultLogger()):
         self.path = path
         self.parsedPath = parsedPath
         self.tokenizer = None
         self.embeddingDim = embeddingDim
         self.MAX_SEQUENCE_LENGTH=MAX_SEQUENCE_LENGTH
         self.logger = logger
+        self.args = args
         
     decodeSentiment = lambda x: "Positive" if x == 4 else "Negative" if x == 0 else "ERROR"
         
-    def load(self, cleanFN, TRAIN_SIZE=0.8, padInput=True, DEBUG=False, Tokanize=True, BERT=False):
+    def load(self, cleanFN, padInput=True, DEBUG=False, Tokanize=True, BERT=False):
         # Read Data
         self.logger.debug('[Sentiment140] Reading Sentiment Dataset')       
         startTime = time.time()  
         dataset = self.__load_dataset(cleanFN)
                     
-        data_rows = Training.NUMBER_OF_TRAINING_DATA_ENTRIES if Training.NUMBER_OF_TRAINING_DATA_ENTRIES is not None else len(dataset)
+        data_rows = self.args['number_of_training_data_entries'] if self.args['number_of_training_data_entries'] is not None else len(dataset)
+        TRAIN_SIZE = self.args['train_size_ratio']
                 
         dataset = dataset.sample(n=data_rows, random_state=42)
         

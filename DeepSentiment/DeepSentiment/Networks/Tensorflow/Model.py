@@ -30,6 +30,7 @@ from DeepSentiment.Dataset import (Glove as GloveDS, Sentiment140 as Sentiment14
 
 from tensorflow.keras.optimizers import Adam
 
+from DeepSentiment.Logging import Logger as DeepLogger
 from DeepSentiment.Consts import (
     Global as Global, 
     Glove as Glove, 
@@ -43,24 +44,27 @@ from DeepSentiment.Networks.Tensorflow.Helper import(
 )
 
 from DeepSentiment.Preprocessing.CleanText import CleanText
+from pprint import pformat
 # endregion
 
 class Model:
-    def loadDataset(self, LOAD_GLOVE, padInput, logger, cleanFN = CleanText().cleanText, Tokanize=True, BERT = False):    
+    def __init__(self, logger=DeepLogger.defaultLogger()):
+        self.logger = logger     
+        
+    def loadDataset(self, LOAD_GLOVE, padInput, args, cleanFN = CleanText().cleanText, Tokanize=True, BERT = False):    
         s140 = Sentiment140DS.Dataset(path=Paths.SENTIMENT140_DATASET, 
                                    parsedPath = Paths.SENTIMENT140_DATASET_PARSED,
                                 embeddingDim=Glove.GLOVE_DIM, 
                                 MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH, 
-                                logger = logger)
+                                logger = self.logger, args=args)
 
-        train_data, test_data, labelDecoder = s140.load(TRAIN_SIZE=Training.TRAIN_SIZE, 
-                                                        DEBUG=Global.DEBUG, 
+        train_data, test_data, labelDecoder = s140.load(DEBUG=Global.DEBUG, 
                                                         cleanFN = cleanFN,
                                                         padInput=padInput,
                                                         Tokanize = Tokanize,
                                                         BERT = BERT)
 
-        gloveEmbeddingMatrix = GloveDS.Dataset(Glove.GLOVE_FILENAME, Glove.GLOVE_DIM, logger = logger) \
+        gloveEmbeddingMatrix = GloveDS.Dataset(Glove.GLOVE_FILENAME, Glove.GLOVE_DIM, logger = self.logger) \
                                 .embeddingMatrix(s140.getTokenizer()) if LOAD_GLOVE else None
 
         return (train_data, test_data, labelDecoder, s140, gloveEmbeddingMatrix) if LOAD_GLOVE else \
@@ -117,9 +121,9 @@ class Model:
                 mask_zero=True))  
         return model
 
-    def baseModelGlove(self, logger):
+    def baseModelGlove(self, args):
         #load Sequential Model & Glove-Embedding-Layer, with Training / Test Dataset
-        train_data, test_data, labelDecoder, s140, gloveEmbeddingMatrix = self.loadDataset(LOAD_GLOVE=True, padInput=True, logger=logger) 
+        train_data, test_data, labelDecoder, s140, gloveEmbeddingMatrix = self.loadDataset(LOAD_GLOVE=True, padInput=True, args=args) 
         vocab_size, embeddingDim, embeddingMatrix, MAX_SEQUENCE_LENGTH = s140.getEmbeddingLayerParams(gloveEmbeddingMatrix, 
                                                                                                     Glove.GLOVE_DIM)
         model = self.embeddingLayerGloveModel(MAX_SEQUENCE_LENGTH=MAX_SEQUENCE_LENGTH, 
@@ -128,72 +132,78 @@ class Model:
                                         embeddingMatrix=embeddingMatrix)    
         return model, train_data, test_data
 
-    def baseModelNonGlove(self, logger):
+    def baseModelNonGlove(self, args):
         #load Sequential Model & Embedding-Layer, with Training / Test Dataset
 
-        train_data, test_data, labelDecoder, s140 = self.loadDataset(LOAD_GLOVE=False, padInput=False, logger=logger)
+        train_data, test_data, labelDecoder, s140 = self.loadDataset(LOAD_GLOVE=False, padInput=False, args=args)
         trainX, trainY = train_data
         encoder = Encoder.trainWordVectorEncoder(trainX, VOCAB_SIZE=Preprocessing.MAX_SEQUENCE_LENGTH)
         model = self.embeddingLayerNoGloveModel(encoder) 
         return model, train_data, test_data
 
     
-    def createModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
-        model, train_data, test_data = self.baseModelGlove(logger) if GLOVE else self.baseModelNonGlove(logger)
+    def createModel(self, args, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False):
+        model, train_data, test_data = self.baseModelGlove(args=args) if GLOVE else self.baseModelNonGlove(args=args)
         trainX, trainY = train_data
-        logger.debug(("[Model] with Glove" if GLOVE else "[Model] Selftrained Word2Vec"))
+        self.logger.debug(("[Model] with Glove" if GLOVE else "[Model] Selftrained Word2Vec"))
 
         if CNN_LAYER:
-            logger.debug("[Model] Add CNN_LAYER")
+            self.logger.debug("[Model] Add CNN_LAYER")
             model = self.addCNNLayer(model)
         
         if POOLING_LAYER:
-            logger.debug("[Model] Add POOLING_LAYER")
+            self.logger.debug("[Model] Add POOLING_LAYER")
             model = self.addCNNLayer(model)  
         
         if GRU_LAYER:
-            logger.debug("[Model] Add GRU_LAYER")
+            self.logger.debug("[Model] Add GRU_LAYER")
             returnSequences = BiLSTM_Layer or LSTM_Layer # only if next layer = RNN
             model = self.addGRULayer(model, returnSequences)
         
         if BiLSTM_Layer:        
-            logger.debug("[Model] Add BiLSTM_Layer")
+            self.logger.debug("[Model] Add BiLSTM_Layer")
             returnSequences = LSTM_Layer # only if next layer = RNN
             model = self.addBiLSTMLayer(model, returnSequences)
 
         if LSTM_Layer:
-            logger.debug("[Model] Add LSTM_Layer")
+            self.logger.debug("[Model] Add LSTM_Layer")
             returnSequences = False
             model = self.addLSTMLayer(model, returnSequences)
         
         if DENSE_LAYER:
-            logger.debug("[Model] Add DENSE_LAYER")
+            self.logger.debug("[Model] Add DENSE_LAYER")
             model = self.addDenseLayer(model)
         
-        logger.debug("Dataset: Training = {}, Validation = {} Item(s)".format(len(train_data[0]), len(test_data[0])))
+        self.logger.debug("Dataset: Training = {}, Validation = {} Item(s)".format(len(train_data[0]), len(test_data[0])))
         model.add(Dropout(0.5))
         model.add(Dense(1, activation='sigmoid')) #output layer      
         
-        model.compile(optimizer=Adam(learning_rate=Training.Learning_Rate), loss='binary_crossentropy', metrics=['accuracy'])    
+        model.compile(optimizer=Adam(learning_rate=args['learning_rate']), loss='binary_crossentropy', metrics=['accuracy'])    
         
         return model, trainX, trainY, test_data
     
-    def loadModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
-        #model, _, _, _ = self.createModel(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, BiLSTM_Layer, DENSE_LAYER, logger)
-        modelPath = Callbacks.createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+    def loadModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, args={}):
+        _args = self.modelArgs(args)
+        modelPath = Callbacks(_args).createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
         return tf.keras.models.load_model(modelPath) 
     
-    def trainModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, logger = None):
-        model, trainX, trainY, test_data = self.createModel(GLOVE, CNN_LAYER, POOLING_LAYER, GRU_LAYER, LSTM_Layer, BiLSTM_Layer, DENSE_LAYER, logger)
-            
-        checkPointPath = Callbacks.createCheckpointPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
-        csvLoggerPath = Logging.createLogPath(PREFIX = "keras_", SUFFIX=".csv", GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
-        modelPath = Callbacks.createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+    def trainModel(self, GLOVE = False, CNN_LAYER = False, POOLING_LAYER = False, GRU_LAYER = False, LSTM_Layer = False, BiLSTM_Layer = False, DENSE_LAYER = False, args={}):
+        _args = self.modelArgs(args)
         
-        callsBacks = [Callbacks.earlyStopping, Callbacks.reduceLRonPlateau, Callbacks.modelCheckpoint(checkPointPath), Callbacks.csvLogger(csvLoggerPath)]
+        self.logger.debug("ModelArgs: ")     
+        self.logger.debug("\n" + pformat(_args))
+        
+        model, trainX, trainY, test_data = self.createModel(args = _args, GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        
+        callBackHelper = Callbacks(_args)
+        checkPointPath = callBackHelper.createCheckpointPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        csvLoggerPath = Logging(_args).createLogPath(PREFIX = "keras_", SUFFIX=".csv", GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        modelPath = callBackHelper.createModelPath(GLOVE = GLOVE, CNN_LAYER = CNN_LAYER, POOLING_LAYER = POOLING_LAYER, GRU_LAYER = GRU_LAYER, LSTM_Layer = LSTM_Layer, BiLSTM_Layer = BiLSTM_Layer, DENSE_LAYER = DENSE_LAYER)
+        
+        callsBacks = [callBackHelper.earlyStopping, callBackHelper.reduceLRonPlateau, callBackHelper.modelCheckpoint(checkPointPath), callBackHelper.csvLogger(csvLoggerPath)]
             
-        history = model.fit(trainX, trainY, epochs=Training.EPOCHS, 
-                            batch_size=Training.BATCH_SIZE,
+        history = model.fit(trainX, trainY, epochs=_args['num_train_epochs'], 
+                            batch_size=_args['train_batch_size'],
                             validation_data=test_data, 
                             callbacks=callsBacks,
                             verbose=2)
@@ -202,4 +212,18 @@ class Model:
         model.save(modelPath)          
             
         return model, history
+    
+    def mapKey(self, key):
+        if key in Training.mapKeys:
+            return Training.mapKeys[key]
+        return key
+
+    def modelArgs(self, args={}):
+        _modelArgs = Training.trainArgs        
+       
+        for k, v in args.items(): 
+            key = self.mapKey(k)
+            _modelArgs[key] = v
+        
+        return _modelArgs
             

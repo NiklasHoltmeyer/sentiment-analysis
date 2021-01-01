@@ -32,7 +32,7 @@ class Model:
         self.logger = logger     
         self.model = None  
         
-    def train(self, args={}, cleanFN = CleanText().cleanText, size=Training.NUMBER_OF_TRAINING_DATA_ENTRIES):
+    def train(self, args={}, cleanFN = CleanText().cleanText):
         self.logger.debug("Train Simpletransformer")
         isCudaAvailable = torch.cuda.is_available()
         
@@ -43,7 +43,7 @@ class Model:
         
         self.logger.debug("ModelArgs: ")     
         self.logger.debug("\n" + pformat(_modelArgs))
-        trainData, testData = self.loadDataset(cleanFN=cleanFN, size=size)
+        trainData, testData = self.loadDataset(cleanFN=cleanFN, size=args['number_of_training_data_entries'])
         
         self.model = ClassificationModel(model_type=self.model_type, model_name=self.model_name, args=_modelArgs, 
                             use_cuda=isCudaAvailable, 
@@ -53,12 +53,12 @@ class Model:
        
         return self.model
     
-    def loadDataset(self, cleanFN, size):    
+    def loadDataset(self, cleanFN, args):    
         train_data, test_data, labelEncoder, s140 = TFModel().loadDataset(LOAD_GLOVE = False, 
                                                                            padInput = False, 
                                                                            logger = self.logger,
                                                                            Tokanize = False,
-                                                                          BERT = True)
+                                                                          BERT = True, args=args)
         
         test_data  = test_data.rename(columns={"sentiment": "labels"})
         train_data = train_data.rename(columns={"sentiment": "labels"})
@@ -66,6 +66,7 @@ class Model:
         test_data["labels"] = test_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         train_data["labels"] = train_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         
+        size = args["number_of_training_data_entries"]
         sizeSecond = int(size * 0.2) if size is not None else None        
         
         train_shuffeld = train_data.sample(n=size, random_state=42) if size is not None else train_data.sample(n=len(train_data), random_state=42)
@@ -96,10 +97,16 @@ class Model:
             self.logger.error("Coul not Save Model!")
         
     
+    def mapKey(self, key):
+        if key in Training.mapKeys:
+            return Training.mapKeys[key]
+        return key
+    
     def modelArgs(self, args={}):
         _modelArgs = SimpleTransformersConsts.MODEL_ARGS
         
         for k, v in args.items(): 
-            _modelArgs[k] = v
+            key = self.mapKey(k)
+            _modelArgs[key] = v
         
         return _modelArgs

@@ -1,7 +1,8 @@
 import logging
+import sys
 
-def defaultLogger(level=logging.DEBUG, format='[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s'):
-    logging.basicConfig(level=level, format=format)
+def defaultLogger(level=logging.DEBUG, handlers=[logging.StreamHandler(sys.stdout)], format='[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s'):
+    logging.basicConfig(level=level, format=format, handlers=handlers)
 
     logger = logging.getLogger("DeepSentiment")
     logging.getLogger("matplotlib").setLevel(logging.WARNING)
