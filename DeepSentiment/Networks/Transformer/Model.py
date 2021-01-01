@@ -43,7 +43,7 @@ class Model:
         
         self.logger.debug("ModelArgs: ")     
         self.logger.debug("\n" + pformat(_modelArgs))
-        self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, size=args['number_of_training_data_entries'])
+        self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, args=args['number_of_training_data_entries'])
         
         self.model = ClassificationModel(model_type=self.model_type, model_name=self.model_name, args=_modelArgs, 
                             use_cuda=isCudaAvailable, 
