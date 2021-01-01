@@ -1,5 +1,4 @@
-
-#region Imports
+# region Imports
 import numpy as np
 import tensorflow as tf
 #import tensorflow_datasets as tfds
@@ -44,6 +43,7 @@ from DeepSentiment.Networks.Tensorflow.Helper import(
 )
 
 from DeepSentiment.Preprocessing.CleanText import CleanText
+# endregion
 
 class Model:
     def loadDataset(self, LOAD_GLOVE, padInput, logger, cleanFN = CleanText().cleanText, Tokanize=True, BERT = False):    
