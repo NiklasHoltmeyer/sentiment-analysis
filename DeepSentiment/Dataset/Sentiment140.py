@@ -38,8 +38,7 @@ class Dataset:
         startTime = time.time()  
         dataset = self.__load_dataset(cleanFN)
                     
-        entries = self.args['number_of_training_data_entries']
-        data_rows = entries if entries is not None else len(dataset)
+        data_rows = self.args['number_of_training_data_entries'] if self.args['number_of_training_data_entries'] is not None else len(dataset)
         TRAIN_SIZE = self.args['train_size_ratio']
                 
         dataset = dataset.sample(n=data_rows, random_state=42)
