@@ -55,7 +55,7 @@ class Model:
     
     def validate(self, args={}):
         self.logger.debug("Validate Simpletransformer Modell")
-        return model.eval_model(self.test_shuffeld) #result, model_outputs, wrong_predictions 
+        return self.model.eval_model(self.test_shuffeld) #result, model_outputs, wrong_predictions 
     
     def loadDataset(self, cleanFN, args):    
         train_data, test_data, labelEncoder, s140 = TFModel().loadDataset(LOAD_GLOVE = False, 
