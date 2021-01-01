@@ -18,21 +18,13 @@ bash ./scripts/0_install_prerequisites.sh
 ### Training
 ```python
 from DeepSentiment.Networks.Tensorflow.Model import Model as TFModel
-import logging
 
-logging.basicConfig(
-    level=logging.DEBUG, 
-    format= '[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', #%(asctime)s - %(levelname)s: %(message)s
-)
-
-logger = logging.getLogger("sentiment")
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
-logging.getLogger("nltk_data").setLevel(logging.WARNING)
+args = {'num_train_epochs': 1} #override Trainings Settings see  ref
 
 model, history = TFModel().trainModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
             POOLING_LAYER = True, 
             BiLSTM_Layer = True, 
-            logger = logger)
+            args=args)
             
 #model, history = TFModel().trainModel(GLOVE = True, 
 #            CNN_LAYER = True 
@@ -48,8 +40,7 @@ model, history = TFModel().trainModel(CNN_LAYER = True,  #self-trained word2vec 
 ```python
 model = TFModel().loadModel(CNN_LAYER = True,  #self-trained word2vec embedding layer
             POOLING_LAYER = True, 
-            BiLSTM_Layer = True, 
-            logger = logger)
+            BiLSTM_Layer = True)
 ```
 ### Prediction
 #### self-trained embedding layer (Word2Vec)
@@ -74,14 +65,14 @@ from DeepSentiment.Consts import (
     Training as Training 
 )
 
+args = Training.trainArgs
 
 s140 = Sentiment140.Dataset(path=Paths.SENTIMENT140_DATASET, 
                                 parsedPath=Paths.SENTIMENT140_DATASET_PARSED,
                                 embeddingDim=Glove.GLOVE_DIM, 
-                                MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH, 
-                                logger = logger)
-train_data, test_data, labelDecoder = s140.load(padInput=True, 
-                                                TRAIN_SIZE=Training.TRAIN_SIZE, 
+                                MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH,
+                                args=args)
+train_data, test_data, labelDecoder = s140.load(padInput=True,                                                 
                                                         DEBUG=Global.DEBUG, 
                                                         cleanFN = CleanText().cleanText,
                                                         Tokanize = True,

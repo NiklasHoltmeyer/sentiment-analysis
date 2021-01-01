@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup #, find_packages
+from setuptools import setup, find_packages
 
 with open('LICENSE') as f:
     license = f.read()
@@ -16,5 +16,6 @@ setup(
     author='Niklas Holtmeyer',
     url='https://github.com/NiklasHoltmeyer/sentiment-analysis',
     license=license,
-    packages=['DeepSentiment', 'DeepSentiment.Consts', 'DeepSentiment.Dataset', 'DeepSentiment.Networks', 'DeepSentiment.Preprocessing', 'DeepSentiment.Networks.Transformer'],#find_packages(exclude=('tests', 'docs')),
+    scripts=["scripts/install_prerequisites.sh"]
+    find_packages(exclude=('tests', 'docs')),
 )
