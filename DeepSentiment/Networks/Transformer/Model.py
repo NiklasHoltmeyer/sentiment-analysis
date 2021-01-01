@@ -34,7 +34,7 @@ class Model:
         
     def train(self, args={}, cleanFN = CleanText().cleanText):
         self.logger.debug("Train Simpletransformer")
-        isCudaAvailable = torch.cuda.is_available()
+        isCudaAvailable = torch.cuda.is_available
         
         if not isCudaAvailable:
             self.logger.warning("Training on CPU!")
