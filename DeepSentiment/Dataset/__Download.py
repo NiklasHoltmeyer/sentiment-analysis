@@ -32,7 +32,7 @@ def downloadGlove(gloveFolderPath, gloveDim = 100): #<- downloads every Dimensio
         
     ##Try to delete TMP
     try:
-        Path("./tmp/").unlink()
+        Path("/tmp/").unlink()
     except:
         pass
     
