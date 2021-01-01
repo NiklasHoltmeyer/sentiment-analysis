@@ -18,6 +18,9 @@ setup(
     license=license,
     scripts=["scripts/install_prerequisites.sh"],    
     packages=find_packages(exclude=('tests', 'docs')),
+    dependency_links=[
+        "https://download.pytorch.org/whl/torch_stable.html",
+    ],
     install_requires=[
         "tqdm",#==4.41.1
         'pandas==1.1.5', #1.2.0
@@ -37,8 +40,10 @@ setup(
         'tfa-nightly==0.13.0.dev20201223200403',
         'tfds-nightly==4.1.0.dev202012260107',
         'tokenizers==0.9.4',
-        'torch',
-        'torchvision',
+        'torch==1.6.0+cu101',
+        'torchvision==0.7.0+cu101',
+        #'torch',
+        #'torchvision',
         'transformers',
         'simpletransformers',
     ],
