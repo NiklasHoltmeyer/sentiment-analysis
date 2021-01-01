@@ -60,7 +60,6 @@ class Model:
     def loadDataset(self, cleanFN, args):    
         train_data, test_data, labelEncoder, s140 = TFModel().loadDataset(LOAD_GLOVE = False, 
                                                                            padInput = False, 
-                                                                           logger = self.logger,
                                                                            Tokanize = False,
                                                                           BERT = True, args=args)
         
