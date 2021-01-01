@@ -15,10 +15,10 @@ def downloadGlove(gloveFolderPath, gloveDim = 100): #<- downloads every Dimensio
     print("Download Glove")
     gloveTwitterIDX = {  '25' : 17, "50" : 18, "100" : 19, "200" : 20 } #key = dim, value = index
     chakinIDX = gloveTwitterIDX[str(gloveDim)]
-    zipFile = chakin.download(number=chakinIDX, save_dir='./tmp/glove')
+    zipFile = chakin.download(number=chakinIDX, save_dir='/tmp/glove')
     print("Unzip Glove")
     ##unzip
-    unzipedPath = "./tmp/glove_unzipped"
+    unzipedPath = "/tmp/glove_unzipped"
     with zipfile.ZipFile(zipFile, 'r') as zip_ref:
         zip_ref.extractall(unzipedPath)
         
