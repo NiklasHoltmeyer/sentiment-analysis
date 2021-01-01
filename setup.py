@@ -19,7 +19,7 @@ setup(
     scripts=["scripts/install_prerequisites.sh"],    
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
-        'tqdm==4.55.0',
+        "tqdm==4.41.1",
         'pandas==1.1.5', #1.2.0
         'matplotlib==3.3.3',
         'chakin==0.0.8',
@@ -38,6 +38,7 @@ setup(
         'tfds-nightly==4.1.0.dev202012260107',
         'tokenizers==0.9.4',
         'torch==1.7.1',
+        'torchvision==0.8.2',
         'transformers==4.1.1',
         'simpletransformers==0.51.5',
     ],
