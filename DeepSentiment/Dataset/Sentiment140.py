@@ -18,6 +18,8 @@ import sys
 import numpy as np 
 from DeepSentiment.Logging import Logger as DeepLogger
 
+from tqdm import tqdm
+
 class Dataset:        
     def __init__(self, path, parsedPath, embeddingDim, args, MAX_SEQUENCE_LENGTH=Preprocessing.MAX_SEQUENCE_LENGTH, logger=DeepLogger.defaultLogger()):
         self.path = path
@@ -46,7 +48,9 @@ class Dataset:
         startTime = time.time()        
         
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset (Sentiment)')
-        dataset['sentiment'] = dataset['sentiment'].apply(Dataset.decodeSentiment)
+        tqdm.pandas()
+
+        dataset['sentiment'] = dataset['sentiment'].progress_apply(Dataset.decodeSentiment)
         
         #Tokenizer
         self.logger.debug('[Sentiment140] Clean Sentiment Dataset [Done]')   
