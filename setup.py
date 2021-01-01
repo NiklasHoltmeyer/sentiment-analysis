@@ -19,7 +19,7 @@ setup(
     scripts=["scripts/install_prerequisites.sh"],    
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
-        "tqdm==4.41.1",
+        "tqdm",#==4.41.1
         'pandas==1.1.5', #1.2.0
         'matplotlib==3.3.3',
         'chakin==0.0.8',
