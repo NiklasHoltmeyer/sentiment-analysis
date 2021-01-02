@@ -49,10 +49,8 @@ class Model:
                             use_cuda=isCudaAvailable, 
                             num_labels=2)
         
-        self.model.train_model(train_df=self.trainData, eval_df=self.testData)        
-       
-        return self.model
-    
+        return self.model.train_model(train_df=self.trainData, eval_df=self.testData)        
+           
     def validate(self, args={}):
         self.logger.debug("Validate Simpletransformer Modell")
         return self.model.eval_model(self.test_shuffeld) #result, model_outputs, wrong_predictions 
