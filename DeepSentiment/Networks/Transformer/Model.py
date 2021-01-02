@@ -43,17 +43,21 @@ class Model:
         
         self.logger.debug("ModelArgs: ")     
         self.logger.debug("\n" + pformat(_modelArgs))
-        self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, args=_modelArgs)
+        self.loadData(cleanFN, _modelArgs)
         
         self.model = ClassificationModel(model_type=self.model_type, model_name=self.model_name, args=_modelArgs, 
                             use_cuda=isCudaAvailable, 
                             num_labels=2)
         
         return self.model.train_model(train_df=self.trainData, eval_df=self.testData)        
+    
+    def loadData(self, cleanFN, args):
+        _modelArgs = self.modelArgs(args)   
+        self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, args=_modelArgs)
            
-    def validate(self, args={}):
+    def validate(self, data, args={}):
         self.logger.debug("Validate Simpletransformer Modell")
-        return self.model.eval_model(self.testData) #result, model_outputs, wrong_predictions 
+        return self.model.eval_model(data) #result, model_outputs, wrong_predictions 
     
     def loadDataset(self, cleanFN, args):    
         train_data, test_data, labelEncoder, s140 = TFModel().loadDataset(LOAD_GLOVE = False, 
