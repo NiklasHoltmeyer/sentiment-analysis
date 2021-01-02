@@ -53,7 +53,7 @@ class Model:
            
     def validate(self, args={}):
         self.logger.debug("Validate Simpletransformer Modell")
-        return self.model.eval_model(self.test_shuffeld) #result, model_outputs, wrong_predictions 
+        return self.model.eval_model(self.testData) #result, model_outputs, wrong_predictions 
     
     def loadDataset(self, cleanFN, args):    
         train_data, test_data, labelEncoder, s140 = TFModel().loadDataset(LOAD_GLOVE = False, 
@@ -84,12 +84,11 @@ class Model:
     def save(self, folder, modelName="model"): 
         ''' Path = e.G. f"{Paths.RESULTS_BASE}/transformer_{model_name}_e5_{size}" '''
         if self.model is not None:
-            self.logger.debug(f"Saving Model ({path})")
-            
             _path = Path(folder)
             _path.mkdir(parents=True, exist_ok=True)
-            
             absolutePath = str(Path(folder, modelName).resolve())
+            
+            self.logger.debug(f"Saving Model ({absolutePath})")
             
             torch.save(self.model, absolutePath)
             self.logger.debug("Saved Model")
