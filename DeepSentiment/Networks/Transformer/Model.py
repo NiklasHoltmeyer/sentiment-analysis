@@ -78,7 +78,11 @@ class Model:
     def load(self, folder, modelName="model"): 
         ''' Path = e.G. f"{Paths.RESULTS_BASE}/transformer_{model_name}_e5_{size}" '''
         absolutePath = str(Path(folder, modelName).resolve())
-        self.model = torch.load(absolutePath)
+        if not torch.cuda.is_available():
+            self.logger.warning("Training/Predicting on CPU!")        
+            self.model = torch.load(absolutePath, map_location=torch.device('cpu'))
+        else:
+            self.model = torch.load(absolutePath)
         return self.model
         
     def save(self, folder, modelName="model"): 
