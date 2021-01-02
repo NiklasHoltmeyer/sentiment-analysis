@@ -113,7 +113,7 @@ class Model:
     def modelArgs(self, args={}):
         _modelArgs = SimpleTransformersConsts.MODEL_ARGS
         
-        for k, v in args.items(): 
+        for k, v in args.items().copy(): 
             key = self.mapKey(k)
             _modelArgs[key] = v
         
