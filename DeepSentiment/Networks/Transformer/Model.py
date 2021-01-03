@@ -51,19 +51,21 @@ class Model:
         
         return self.model.train_model(train_df=self.trainData, eval_df=self.testData)        
     
-    def loadData(self, cleanFN, args):
+    def loadData(self, cleanFN, args={}):
         _modelArgs = self.modelArgs(args)   
         self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, args=_modelArgs)
            
     def validate(self, data, args={}):
+        #_modelArgs = self.modelArgs(args)
         self.logger.debug("Validate Simpletransformer Modell")
         return self.model.eval_model(data) #result, model_outputs, wrong_predictions 
     
-    def loadDataset(self, cleanFN, args):    
+    def loadDataset(self, cleanFN, args={}):    
+        _modelArgs = self.modelArgs(args)
         train_data, test_data, labelEncoder, s140 = TFModel().loadDataset(LOAD_GLOVE = False, 
                                                                            padInput = False, 
                                                                            Tokanize = False,
-                                                                          BERT = True, args=args)
+                                                                          BERT = True, args=_modelArgs)
         
         test_data  = test_data.rename(columns={"sentiment": "labels"})
         train_data = train_data.rename(columns={"sentiment": "labels"})
@@ -71,7 +73,7 @@ class Model:
         test_data["labels"] = test_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         train_data["labels"] = train_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         
-#        size = args["number_of_training_data_entries"]
+#        size = _modelArgs["number_of_training_data_entries"]
 #        sizeSecond = int(size * 0.2) if size is not None else None        
         
 #        train_shuffeld = train_data.sample(n=size, random_state=42) if size is not None else train_data.sample(n=len(train_data), random_state=42)
@@ -113,7 +115,7 @@ class Model:
     def modelArgs(self, args={}):
         _modelArgs = SimpleTransformersConsts.MODEL_ARGS
         
-        for k, v in args.items().copy(): 
+        for k, v in args.items(): 
             key = self.mapKey(k)
             _modelArgs[key] = v
         
