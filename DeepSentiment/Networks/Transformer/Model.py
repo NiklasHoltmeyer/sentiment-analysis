@@ -39,11 +39,11 @@ class Model:
         if not isCudaAvailable:
             self.logger.warning("Training on CPU!")
         
-        _modelArgs = self.modelArgs(args)           
+        _modelArgs = self.modelArgs(args)             
         
         self.logger.debug("ModelArgs: ")     
         self.logger.debug("\n" + pformat(_modelArgs))
-        self.loadData(cleanFN, _modelArgs)
+        self.loadData(cleanFN, _modelArgs, lazyLoading)
         
         self.model = ClassificationModel(model_type=self.model_type, model_name=self.model_name, args=_modelArgs, 
                             use_cuda=isCudaAvailable, 
@@ -53,7 +53,7 @@ class Model:
     
     def loadData(self, cleanFN, args={}):
         _modelArgs = self.modelArgs(args)   
-        self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, args=_modelArgs)
+        self.trainData, self.testData = self.loadDataset(cleanFN=cleanFN, args=_modelArgs)  #Dataframe if "lazy_loading" False, else TSV Path
            
     def validate(self, data, args={}):
         #_modelArgs = self.modelArgs(args)
@@ -73,6 +73,11 @@ class Model:
         test_data["labels"] = test_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         train_data["labels"] = train_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         
+        if "lazy_loading" in _modelArgsd:
+            trainingPath, testPath = Paths.SENTIMENT140_DATASET_PARSED_TSV
+            
+            return train_data.to_csv(trainingPath, sep="\t"), test_data.to_csv(testPath, sep="\t")            
+
 #        size = _modelArgs["number_of_training_data_entries"]
 #        sizeSecond = int(size * 0.2) if size is not None else None        
         
