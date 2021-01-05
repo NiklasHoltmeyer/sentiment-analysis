@@ -23,6 +23,7 @@ from pprint import pformat
 import torch
 
 from pathlib import Path
+import os
 # endregion
 
 class Model:
@@ -49,7 +50,7 @@ class Model:
                             use_cuda=isCudaAvailable, 
                             num_labels=2)
         
-        if "lazy_loading" in _modelArgsd:
+        if "lazy_loading" in _modelArgs:
             if not (isinstance(self.trainData, str) and isinstance(self.testData, str)):
                 self.logger.error("Lazy loading requires a string to a path.")
                 self.logger.error(f"Train-Data-Type: {type(self.trainData)}")
@@ -82,8 +83,10 @@ class Model:
         
         if "lazy_loading" in _modelArgsd:
             trainingPath, testPath = Paths.SENTIMENT140_DATASET_PARSED_TSV
-            train_data.to_csv(trainingPath, sep="\t")
-            test_data.to_csv(testPath, sep="\t")        
+            if not os.path.isfile(trainingPath):
+                train_data.to_csv(trainingPath, sep="\t")
+            if not not os.path.isfile(testPath):
+                test_data.to_csv(testPath, sep="\t")        
             return trainingPath, testPath
 
 #        size = _modelArgs["number_of_training_data_entries"]
