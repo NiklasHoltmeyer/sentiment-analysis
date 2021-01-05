@@ -85,7 +85,7 @@ class Model:
             trainingPath, testPath = Paths.SENTIMENT140_DATASET_PARSED_TSV
             if not os.path.isfile(trainingPath):
                 train_data.to_csv(trainingPath, sep="\t")
-            if not not os.path.isfile(testPath):
+            if not os.path.isfile(testPath):
                 test_data.to_csv(testPath, sep="\t")        
             return trainingPath, testPath
 
