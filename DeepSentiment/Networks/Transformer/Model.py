@@ -81,7 +81,7 @@ class Model:
         test_data["labels"] = test_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         train_data["labels"] = train_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         
-        if "lazy_loading" in _modelArgsd:
+        if "lazy_loading" in _modelArgs:
             trainingPath, testPath = Paths.SENTIMENT140_DATASET_PARSED_TSV
             if not os.path.isfile(trainingPath):
                 train_data.to_csv(trainingPath, sep="\t")
