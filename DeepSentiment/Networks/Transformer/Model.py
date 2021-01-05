@@ -49,6 +49,13 @@ class Model:
                             use_cuda=isCudaAvailable, 
                             num_labels=2)
         
+        if "lazy_loading" in _modelArgsd:
+            if not (isinstance(self.trainData, str) and isinstance(self.testData, str)):
+                self.logger.error("Lazy loading requires a string to a path.")
+                self.logger.error(f"Train-Data-Type: {type(self.trainData)}")
+                self.logger.error(f"Test-Data-Type: {type(self.testData)}")
+                return None
+        
         return self.model.train_model(train_df=self.trainData, eval_df=self.testData)        
     
     def loadData(self, cleanFN, args={}):
@@ -75,8 +82,9 @@ class Model:
         
         if "lazy_loading" in _modelArgsd:
             trainingPath, testPath = Paths.SENTIMENT140_DATASET_PARSED_TSV
-            
-            return train_data.to_csv(trainingPath, sep="\t"), test_data.to_csv(testPath, sep="\t")            
+            train_data.to_csv(trainingPath, sep="\t")
+            test_data.to_csv(testPath, sep="\t")        
+            return trainingPath, testPath
 
 #        size = _modelArgs["number_of_training_data_entries"]
 #        sizeSecond = int(size * 0.2) if size is not None else None        
