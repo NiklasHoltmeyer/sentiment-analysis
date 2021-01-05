@@ -50,7 +50,7 @@ class Model:
                             use_cuda=isCudaAvailable, 
                             num_labels=2)
         
-        if "lazy_loading" in _modelArgs:
+        if _modelArgs["lazy_loading"]:
             if not (isinstance(self.trainData, str) and isinstance(self.testData, str)):
                 self.logger.error("Lazy loading requires a string to a path.")
                 self.logger.error(f"Train-Data-Type: {type(self.trainData)}")
@@ -81,7 +81,7 @@ class Model:
         test_data["labels"] = test_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         train_data["labels"] = train_data["labels"].apply(lambda x: np.int8(1) if x in 'Positive' else np.int8(0))
         
-        if "lazy_loading" in _modelArgs:
+        if _modelArgs["lazy_loading"]:
             trainingPath, testPath = Paths.SENTIMENT140_DATASET_PARSED_TSV
             if not os.path.isfile(trainingPath):
                 train_data.to_csv(trainingPath, sep="\t", columns=["text", "labels"], header=False, index=False)
