@@ -43,7 +43,7 @@ class Model:
         
         self.logger.debug("ModelArgs: ")     
         self.logger.debug("\n" + pformat(_modelArgs))
-        self.loadData(cleanFN, _modelArgs, lazyLoading)
+        self.loadData(cleanFN, _modelArgs)
         
         self.model = ClassificationModel(model_type=self.model_type, model_name=self.model_name, args=_modelArgs, 
                             use_cuda=isCudaAvailable, 
