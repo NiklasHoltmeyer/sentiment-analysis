@@ -29,5 +29,6 @@ MODEL_ARGS = {
     'gradient_accumulation_steps' : 8, # Default 1, The number of training steps to execute before performing a optimizer.step(). Effectively increases the training batch size while sacrificing training time to lower memory consumption,
     'use_cached_eval_features' : False,
     'number_of_training_data_entries' : 800_000, # int or None, None = load all Entries 
-    'train_size_ratio' : 0.8
+    'train_size_ratio' : 0.8,
+    'lazy_loading' : False
 } #args based on: https://colab.research.google.com/drive/1JKQj-DWHLv_vBdF3VypAIEC6npULOFGy#scrollTo=X7difgOhg664, #https://simpletransformers.ai/docs/usage/#configuring-a-simple-transformers-model 
