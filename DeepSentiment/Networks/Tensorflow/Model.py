@@ -153,7 +153,7 @@ class Model:
         
         if POOLING_LAYER:
             self.logger.debug("[Model] Add POOLING_LAYER")
-            model = self.addCNNLayer(model)  
+            model = self.addPoolingLayer(model)  
         
         if GRU_LAYER:
             self.logger.debug("[Model] Add GRU_LAYER")
